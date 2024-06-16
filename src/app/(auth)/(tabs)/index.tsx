@@ -26,6 +26,9 @@ export default function TabOneScreen() {
       <TouchableOpacity style={styles.systemContainer} onPress={()=>{router.replace('/scm')}} >
         <Text style={styles.systemText}>SCM Mallon</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.systemContainer} onPress={()=>{router.replace('/indicadores')}} >
+        <Text style={styles.systemText}>Indicadores Mallon</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.systemContainer} onPress={()=>{router.replace('/novos')}} >
         <Text style={styles.systemText}>Veículos Novos</Text>
       </TouchableOpacity>

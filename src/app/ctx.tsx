@@ -70,7 +70,8 @@ export function SessionProvider(props: React.PropsWithChildren) {
             const userData = await response.json();
 
             await AsyncStorage.setItem('session', JSON.stringify(userData));
-            setSession(userData);
+            setSession(JSON.stringify(userData));
+            
           } catch (error) {
             console.error("Falha no login:", error);
             throw error;
