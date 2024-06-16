@@ -5,16 +5,16 @@ import { useEffect } from "react";
 import { SessionProvider } from "./ctx";
 
 export {
-  // Catch any errors thrown by the Layout component.
+  // Capture quaisquer erros gerados pelo componente Layout.
   ErrorBoundary,
 } from "expo-router";
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
+  // Certifique-se de que recarregar em `/modal` botão Voltar.
   initialRouteName: "login",
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Impedir que a tela inicial seja ocultada automaticamente antes que o carregamento dos ativos seja concluído.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -23,7 +23,7 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  // Expo Router usa Error Boundaries para capturar erros na árvore de navegação.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
