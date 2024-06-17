@@ -5,14 +5,15 @@ import { router } from "expo-router";
 
 export default function Login() {
   const { signIn } = useSession();
-  const [email, setEmail] = useState('ti@mallon.com.br');
-  const [password, setPassword] = useState('Mallon@2024');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
       await signIn(email, password);
       router.replace("/");
     } catch (error) {
+      console.error("Falha no login: ", error);
       Alert.alert("Falha no login", "Verifique seu email ou senha");
     }
   };
@@ -20,7 +21,7 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <View style={styles.containerLogin}>
-        <Image source={require('../assets/images/Mallon - Azul e Preto.png')} style={styles.logo} />
+        <Image source={require('@/assets/images/Mallon - Azul e Preto.png')} style={styles.logo} />
         <TextInput autoCapitalize="none" placeholder="Email" style={styles.input} onChangeText={setEmail} />
         <TextInput autoCapitalize="none" placeholder="Senha" secureTextEntry style={styles.input} onChangeText={setPassword} />
         <TouchableOpacity style={styles.button} onPress={handleLogin}>

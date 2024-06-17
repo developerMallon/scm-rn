@@ -56,7 +56,7 @@ export function SessionProvider(props: React.PropsWithChildren) {
       value={{
         signIn: async (email, password) => {
           try {
-            // Replace with your API call
+            // Chamada ao login da API
             const response = await fetch("https://scm-api.mallon.click/user/login", {
               method: "POST",
               headers: {
