@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useStorageState } from "./useStorageState";
+import api from '@/services/api';
 
 type User = {
   id: number;
@@ -56,21 +57,14 @@ export function SessionProvider(props: React.PropsWithChildren) {
       value={{
         signIn: async (email, password) => {
           try {
-            // Chamada ao login da API
-            const response = await fetch("https://scm-api.mallon.click/user/login", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ email, password }),
+            // Chamada ao login da API usando axios
+            const response = await api.post("/user/login", {
+              email,
+              password
             });
-
-            if (!response.ok) {
-              throw new Error("Falha no login");
-            }
-                       
-            const userData = await response.json() as User;
-
+        
+            const userData = response.data;
+        
             await AsyncStorage.setItem('session', JSON.stringify(userData));
             setSession(userData);
           } catch (error) {
