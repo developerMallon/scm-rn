@@ -35,14 +35,17 @@ export function useSession() {
 }
 
 export function SessionProvider(props: React.PropsWithChildren) {
-  const [[isLoading, session], setSession] = useStorageState("session");
+  const [[isLoading, session], setSession] = useStorageState<User | null>("session");
 
   useEffect(() => {
     // Load the token from storage if it exists
     const loadSession = async () => {
       const sessionStr = await AsyncStorage.getItem('session');
       if (sessionStr) {
-        setSession(JSON.parse(sessionStr));
+        const user = JSON.parse(sessionStr) as User;
+        setSession(user);
+      } else {
+        setSession(null);
       }
     };
     loadSession();
@@ -52,7 +55,6 @@ export function SessionProvider(props: React.PropsWithChildren) {
     <AuthContext.Provider
       value={{
         signIn: async (email, password) => {
-          
           try {
             // Replace with your API call
             const response = await fetch("https://scm-api.mallon.click/user/login", {
@@ -67,11 +69,10 @@ export function SessionProvider(props: React.PropsWithChildren) {
               throw new Error("Falha no login");
             }
                        
-            const userData = await response.json();
+            const userData = await response.json() as User;
 
             await AsyncStorage.setItem('session', JSON.stringify(userData));
-            setSession(JSON.stringify(userData));
-            
+            setSession(userData);
           } catch (error) {
             console.error("Falha no login:", error);
             throw error;

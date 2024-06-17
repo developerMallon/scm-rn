@@ -5,17 +5,18 @@ import { Text, View } from "@/components/Themed";
 import { useSession } from "../../ctx";
 import { router } from "expo-router";
 
-export default function TabOneScreen() {
+export default function Home() {
   // O session vai armazenar as informações do usuário logado
   const { signOut, session } = useSession();
   // Se não houver session vai direcionar para a tela de login
   if (!session) {
     router.replace("/"); // redireciona para a tela de login
   }
-
+  
   return (
     <View style={styles.container}>
-      <Image source={require('@/assets/images/Trucks.png')} style={styles.logo} />
+      <Image source={require('@/assets/images/Mallon - Preto.png')} style={styles.logo} />
+      {/* <Image source={require('@/assets/images/Trucks.png')} style={styles.trucks} /> */}
       {session && (
         <Text style={styles.messageText}>Olá, {session.first_name}</Text>
       )}
@@ -51,9 +52,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#1bb6c8',
   },
   logo: {
-    height: 100,
+    height: 65,
     width: 278,
     marginVertical: 30
+  },
+  trucks: {
+    height: 100,
+    width: 278,
+    marginBottom: 30
   },
   messageText: {
     color: '#fafafa',
