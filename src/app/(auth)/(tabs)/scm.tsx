@@ -4,8 +4,6 @@ import { Text } from "@/components/Themed";
 import { useSession } from "../../ctx";
 import { router } from "expo-router";
 import api from '@/services/api';
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 
 type Ticket = {
@@ -46,12 +44,13 @@ export default function Scm() {
     };
 
     getTickets();
-  }, [session]);
+  }, []);
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#1bb6c8" />
+        <ActivityIndicator size="large" color="#FAFAFA" />
+        <Text style={styles.messageText}>Carregando ...</Text>
       </View>
     );
   }
@@ -63,6 +62,8 @@ export default function Scm() {
       <FlatList
         data={tickets}
         keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <View style={styles.ticketContainer}>
             <View style={styles.columnStart}>
