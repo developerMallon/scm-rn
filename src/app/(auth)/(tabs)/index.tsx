@@ -30,9 +30,9 @@ export default function Home() {
       <TouchableOpacity style={styles.systemContainer} onPress={()=>{router.replace('/indicadores')}} >
         <Text style={styles.systemText}>Indicadores Mallon</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.systemContainer} onPress={()=>{router.replace('/novos')}} >
+      {/* <TouchableOpacity style={styles.systemContainer} onPress={()=>{router.replace('/novos')}} >
         <Text style={styles.systemText}>Veículos Novos</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity style={styles.systemContainer} onPress={()=>{router.replace('/usados')}} >
         <Text style={styles.systemText}>Veículos Usados</Text>
       </TouchableOpacity>

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useSession } from "../../ctx";
 import { router } from "expo-router";
+import axios from "axios";
 
 type Ticket = {
   id: number;
@@ -15,35 +16,26 @@ export default function Scm() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Se não houver session vai direcionar para a tela de login
+  
   useEffect(() => {
+    // Verifica se a sessão é válida. Caso contrário força a rota de login
     if (!session) {
       router.replace("/");
       return;
     }
-    
+
     const getTickets = async () => {
-      console.error(`Bearer ${session.access_token}`)
-      
       try {
-        const response = await fetch("https://scm-api.mallon.click/complaint", {
-          method: "GET",
+        const response = await axios.get("https://scm-api.mallon.click/complaint", {
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${session.access_token}`,
           },
         });
 
-        const ticketsData = await response.json();
+        console.error("response.data: ", response.data);
+        setTickets(response.data);
 
-        console.error("response.ticketsData: Erro ao buscar tickets:", ticketsData);
-
-        if (!response.ok) {
-          throw new Error(ticketsData);
-        }
-
-        
-        setTickets(ticketsData);
       } catch (error) {
         console.error("Erro ao buscar tickets:", error);
       } finally {
@@ -53,10 +45,16 @@ export default function Scm() {
 
     getTickets();
   }, [session]);
+  
 
-  if (!session) {
-    return null; // ou um indicador de carregamento, se preferir
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#1bb6c8" />
+      </View>
+    );
   }
+  
 
   return (
     <View style={styles.container}>
