@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Button, TextInput, View, Text, TouchableOpacity, Image, Alert } from "react-native";
+import { StyleSheet, Button, TextInput, View, Text, Pressable, Image, Alert } from "react-native";
 import { useSession } from "./ctx";
 import { router } from "expo-router";
 
@@ -24,9 +24,9 @@ export default function Login() {
         <Image source={require('@/assets/images/Mallon - Azul e Preto.png')} style={styles.logo} />
         <TextInput autoCapitalize="none" placeholder="Email" style={styles.input} onChangeText={setEmail} />
         <TextInput autoCapitalize="none" placeholder="Senha" secureTextEntry style={styles.input} onChangeText={setPassword} />
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Pressable style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Entrar</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

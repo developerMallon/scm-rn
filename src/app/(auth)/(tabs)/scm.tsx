@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, View } from "react-native";
+import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, View, Pressable } from "react-native";
 import { Text } from "@/components/Themed";
 import { useSession } from "../../ctx";
 import { router } from "expo-router";
@@ -86,9 +86,9 @@ export default function Scm() {
         )}
       />
 
-      <TouchableOpacity style={styles.button} onPress={() => { router.replace('/'); }}>
+      <Pressable style={styles.button} onPress={() => { router.replace('/'); }}>
         <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
