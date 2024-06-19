@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { config } from '../../app.config';
+import { config } from '../../config';
 
 // Carrega as variáveis de ambiente
 const { PUBLIC_STATUS, API_URL_SCM_PRODUCTION, API_URL_SCM_DEVELOPMENT } = config;
@@ -11,7 +11,7 @@ let apiURL = API_URL_SCM_PRODUCTION
 if (PUBLIC_STATUS !== "PRODUCTION") {
     apiURL = API_URL_SCM_DEVELOPMENT
 }
-console.log('apiURL: ', apiURL)
+// console.log('apiURL: ', apiURL)
 // Configura a baseURL do axios conforme a situação (DESENVOLVIMENTO ou DESENVOLVIMENTO)
 const api = axios.create({
     baseURL: apiURL,

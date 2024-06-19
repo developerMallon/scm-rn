@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Button, TextInput, View, Text, Pressable, Image, Alert } from "react-native";
-import { useSession } from "./ctx";
+import { useSession } from "../context/ctx";
 import { router } from "expo-router";
 
 export default function Login() {

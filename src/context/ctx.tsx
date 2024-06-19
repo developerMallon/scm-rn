@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useStorageState } from "./useStorageState";
+import { useStorageState } from "../services/useStorageState";
 import api from '@/services/api';
 
 type User = {

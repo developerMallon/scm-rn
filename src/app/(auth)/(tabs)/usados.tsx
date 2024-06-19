@@ -1,7 +1,7 @@
 // Tab ONE
 import { StyleSheet, Image, Pressable } from "react-native";
 import { Text, View } from "@/components/Themed";
-import { useSession } from "../../ctx";
+import { useSession } from "../../../context/ctx";
 import { router } from "expo-router";
 
 export default function TabOneScreen() {

@@ -1,8 +1,8 @@
 import { StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
 import { Text, View } from "@/components/Themed";
-import { useSession } from "../../ctx";
+import { useSession } from "../../../context/ctx";
 import { router } from "expo-router";
-import { config } from '../../../../app.config';
+import { config } from '../../../../config';
 
 export default function Home() {
   // O session vai armazenar as informações do usuário logado
@@ -48,8 +48,8 @@ export default function Home() {
         <Pressable style={styles.button} onPress={() => { signOut(); }}>
           <Text style={styles.buttonText}>Sair</Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={() => { showEnv(); }}>
-          <Text style={styles.buttonText}>Variáveis de Ambiente</Text>
+        <Pressable style={styles.button} onPress={() => { router.replace('/teste') }}>
+          <Text style={styles.buttonText}>Teste</Text>
         </Pressable>
       </View>
     );

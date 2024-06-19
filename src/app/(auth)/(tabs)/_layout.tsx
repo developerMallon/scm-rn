@@ -27,7 +27,7 @@ export default function TabLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}
     >
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="index"
         options={{
           title: "Home",
@@ -47,7 +47,7 @@ export default function TabLayout() {
             </Link>
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="scm"
         options={{

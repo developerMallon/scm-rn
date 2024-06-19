@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, View, Pressable } from "react-native";
+import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, View, Pressable, TextInput } from "react-native";
 import { Text } from "@/components/Themed";
-import { useSession } from "../../ctx";
+import { useSession } from "../../../context/ctx";
 import { router } from "expo-router";
 import api from '@/services/api';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { Dropdown } from 'react-native-element-dropdown';
+import AntDesign from '@expo/vector-icons/AntDesign';
+
+type Item = {
+  label: string;
+  value: string;
+};
 
 type Ticket = {
   id: number;
@@ -17,34 +24,40 @@ export default function Scm() {
   const { signOut, session } = useSession();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [selectedValue, setSelectedValue] = useState<string | null>('1');
+  const [selectedLabel, setSelectedLabel] = useState<string>('Abertos');
+  const [isFocus, setIsFocus] = useState<boolean>(false);
 
-  useEffect(() => {
+
+  const getTickets = async () => {
+
     // Verifica se a sessão é válida. Caso contrário força a rota de login
     if (!session) {
       router.replace("/");
       return;
     }
+    setLoading(true);
+    try {
+      const response = await api.get(`/complaint/get/?status=${selectedValue}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+      });
 
-    const getTickets = async () => {
-      try {
-        const response = await api.get("/complaint/get/?status=1,2,3,4,5", {
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${session.access_token}`,
-          },
-        });
+      setTickets(response.data);
 
-        setTickets(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar tickets:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      } catch (error) {
-        console.error("Erro ao buscar tickets:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
+  useEffect(() => {
     getTickets();
-  }, []);
+  }, [selectedValue]);
 
   if (loading) {
     return (
@@ -57,9 +70,45 @@ export default function Scm() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.messageText}>SCM Mallon</Text>
+      {/* <Text style={styles.messageText}>SCM Mallon</Text> */}
+
+      <Dropdown
+        style={[styles.dropdown, isFocus && { borderColor: '#1bb6c8' }]}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        iconStyle={styles.iconStyle}
+        data={[
+          { label: 'Abertos', value: '1' },
+          { label: 'Em Andamento', value: '2' },
+          { label: 'Pendentes', value: '3' },
+          { label: 'Solucionados', value: '4' },
+          { label: 'Cancelados', value: '5' },
+          { label: 'Todos', value: '1,2,3,4,5' },
+        ]}
+        maxHeight={300}
+        labelField="label"
+        valueField="value"
+        placeholder={selectedLabel}
+        value={selectedValue}
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
+        onChange={(item: Item) => {
+          setSelectedValue(item.value);
+          setSelectedLabel(item.label);
+          setIsFocus(false);
+        }}
+        renderLeftIcon={() => (
+          <AntDesign
+            style={styles.icon}
+            color={isFocus ? '#1bb6c8' : 'black'}
+            name="Safety"
+            size={20}
+          />
+        )}
+      />
 
       <FlatList
+        style={styles.flatlist}
         data={tickets}
         keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
@@ -159,4 +208,27 @@ const styles = StyleSheet.create({
   icon: {
     marginLeft: 10,
   },
+  dropdown: {
+    width: '95%',
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    marginVertical: 8,
+    backgroundColor: '#fafafa',
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  flatlist: {
+    marginLeft: 8
+  }
 });

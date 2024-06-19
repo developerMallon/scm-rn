@@ -2,7 +2,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { SessionProvider } from "./ctx";
+import { SessionProvider } from "../context/ctx";
 
 export {
   // Capture quaisquer erros gerados pelo componente Layout.
