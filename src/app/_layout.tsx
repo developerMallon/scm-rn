@@ -41,7 +41,7 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 import { Slot } from "expo-router";
-
+console.log("raiz do app ==============>")
 function RootLayoutNav() {
   return (
     <SessionProvider>

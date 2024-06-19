@@ -149,6 +149,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#1bb6c8',
   },
+  flatlist: {
+    marginLeft: 8
+  },
   messageText: {
     color: '#fafafa',
     fontSize: 18,
@@ -214,7 +217,7 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 0.5,
     borderRadius: 8,
-    paddingHorizontal: 8,
+    padding: 8,
     marginVertical: 8,
     backgroundColor: '#fafafa',
   },
@@ -228,7 +231,5 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  flatlist: {
-    marginLeft: 8
-  }
+  
 });

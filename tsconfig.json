@@ -10,6 +10,9 @@
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
-, "src/app/(auth)/(tabs)/teste.tsx"  ]
+    "**/*.tsx",
+    "src/app/(auth)/(tabs)/teste.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
 }
