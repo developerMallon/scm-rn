@@ -21,9 +21,9 @@ export default function TabOneScreen() {
       <Text style={styles.messageText}>Seja bem-vindo(a).</Text>
       <Text style={styles.messageText}>Indicadores Mallon</Text>
 
-      <Pressable style={styles.button} onPress={() => { router.replace('/'); }}>
+      {/* <Pressable style={styles.button} onPress={() => { router.replace('/'); }}>
         <Text style={styles.buttonText}>Voltar</Text>
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 }

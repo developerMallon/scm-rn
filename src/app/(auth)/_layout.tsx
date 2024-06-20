@@ -1,7 +1,6 @@
 import { Redirect, Stack } from 'expo-router';
-
 import { useSession } from '../../context/ctx';
-import { Text } from '@/components/Themed';
+import { Text } from 'react-native';
 
 export default function AppLayout() {
   const { session, isLoading } = useSession();
@@ -16,10 +15,13 @@ export default function AppLayout() {
   if (!session) {
     return <Redirect href="/login" />;
   }
-
+  // console.log("layout do auth ==============>")
   return (
     <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ 
+        headerShown: false,
+        title: "APP Mallon",
+      }} />
     </Stack>
   )
 }

@@ -1,74 +1,108 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
-
-import Colors from "@/constants/Colors";
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import MaterialIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Tabs } from "expo-router";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+import { useNavigation } from '@react-navigation/native';
+import { useSession } from "@/context/ctx";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const navigation = useNavigation();
+  const { signOut, session } = useSession();
+
+  const HeaderRight = () => (
+    <Pressable onPress={() => signOut()} style={styles.logoutButton}>
+      <MaterialIcons name="location-exit" color="#fafafa" size={30} />
+    </Pressable>
+  );
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}
-    >
-      {/* <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+    <View style={{ flex: 1 }}>
+      <StatusBar backgroundColor="#1BB6C8" style="light" />
+      <Tabs
+        screenOptions={{
+          headerShown: true,
+          headerStyle: { backgroundColor: '#1699B4' },
+          headerTintColor: '#fafafa',
+          headerRight: HeaderRight,
+          tabBarShowLabel: false,
         }}
-      /> */}
-      <Tabs.Screen
-        name="scm"
-        options={{
-          title: "SCM",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="novos"
-        options={{
-          title: "Novos",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="usados"
-        options={{
-          title: "Usados",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "APP Mallon",
+            tabBarIcon: ({ color, focused, size }) => {
+              if (focused) {
+                return <MaterialIcons name="home-circle" color="#1BB6C8" size={40} />
+              }
+              return <MaterialIcons name="home-circle-outline" color={color} size={size} />
+            }
+          }}
+        />
+        <Tabs.Screen
+          name="scm"
+          options={{
+            title: "SCM",
+            tabBarIcon: ({ color, focused, size }) => {
+              if (focused) {
+                return <Ionicons name="ticket" color="#1BB6C8" size={40} />
+              }
+              return <Ionicons name="ticket-outline" color={color} size={size} />
+            }
+          }}
+        />
+        <Tabs.Screen
+          name="indicadores"
+          options={{
+            title: "Indicadores",
+            tabBarIcon: ({ color, focused, size }) => {
+              if (focused) {
+                return <Ionicons name="bar-chart" color="#1BB6C8" size={40} />
+              }
+              return <Ionicons name="bar-chart-outline" color={color} size={size} />
+            }
+          }}
+        />
+        <Tabs.Screen
+          name="novos"
+          options={{
+            title: "Novos",
+            tabBarIcon: ({ color, focused, size }) => {
+              if (focused) {
+                return <MaterialIcons name="truck-check" color="#1BB6C8" size={40} />
+              }
+              return <MaterialIcons name="truck-check-outline" color={color} size={size} />
+            }
+          }}
+        />
+        <Tabs.Screen
+          name="usados"
+          options={{
+            title: "Usados",
+            tabBarIcon: ({ color, focused, size }) => {
+              if (focused) {
+                return <MaterialIcons name="truck" color="#1BB6C8" size={40} />
+              }
+              return <MaterialIcons name="truck-outline" color={color} size={size} />
+            }
+          }}
+        />
+      </Tabs>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  logoutButton: {
+    marginRight: 10,
+  },
+  logoutText: {
+    color: '#fafafa',
+    fontSize: 16,
+  },
+});

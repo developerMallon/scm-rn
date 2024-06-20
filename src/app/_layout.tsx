@@ -10,7 +10,6 @@ export {
 } from "expo-router";
 
 export const unstable_settings = {
-  // Certifique-se de que recarregar em `/modal` botão Voltar.
   initialRouteName: "login",
 };
 
@@ -41,11 +40,11 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 import { Slot } from "expo-router";
-console.log("raiz do app ==============>")
+// console.log("layout do app ==============>")
 function RootLayoutNav() {
   return (
     <SessionProvider>
-      <Slot />
+        <Slot />
     </SessionProvider>
   );
 }

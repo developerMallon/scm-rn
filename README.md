@@ -26,3 +26,9 @@ To start the project, run:
 ```bash
 npx expo start
 ```
+
+```bash
+    'Visite nossos ícones
+    https://icons.expo.fyi/
+```
+

@@ -134,10 +134,10 @@ export default function Scm() {
           </View>
         )}
       />
-
+{/* 
       <Pressable style={styles.button} onPress={() => { router.replace('/'); }}>
         <Text style={styles.buttonText}>Voltar</Text>
-      </Pressable>
+      </Pressable> */}
     </View>
   );
 }
