@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, View, Pressable, TextInput } from "react-native";
 import { Text } from "@/components/Themed";
-import { useSession } from "../../../context/ctx";
+import { useSession } from "@/context/ctx";
 import { router } from "expo-router";
 import api from '@/services/api';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
@@ -59,14 +59,14 @@ export default function Scm() {
     getTickets();
   }, [selectedValue]);
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#FAFAFA" />
-        <Text style={styles.messageText}>Carregando ...</Text>
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <ActivityIndicator size="large" color="#FAFAFA" />
+  //       <Text style={styles.messageText}>Carregando ...</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.container}>
@@ -100,13 +100,21 @@ export default function Scm() {
         renderLeftIcon={() => (
           <AntDesign
             style={styles.icon}
-            color={isFocus ? '#1bb6c8' : 'black'}
-            name="Safety"
-            size={20}
+            // color={isFocus ? '#1bb6c8' : 'black'}
+            name={isFocus ? "menufold" : "menuunfold"}
+            size={25}
           />
         )}
       />
 
+      { loading && (
+        <View style={styles.container}>
+        <ActivityIndicator size="large" color="#FAFAFA" />
+        <Text style={styles.messageText}>Carregando ...</Text>
+      </View>
+      )}
+
+      { !loading && (
       <FlatList
         style={styles.flatlist}
         data={tickets}
@@ -128,13 +136,13 @@ export default function Scm() {
             </View>
             <View style={styles.columnEnd}>
               <TouchableOpacity style={styles.editButton} onPress={() => { /* Função para editar */ }}>
-                <FontAwesomeIcon name="edit" size={24} color="#1bb6c8" />
+                <FontAwesomeIcon name="edit" size={25} color="#1bb6c8" />
               </TouchableOpacity>
             </View>
           </View>
         )}
-      />
-{/* 
+      />)}
+      {/* 
       <Pressable style={styles.button} onPress={() => { router.replace('/'); }}>
         <Text style={styles.buttonText}>Voltar</Text>
       </Pressable> */}
@@ -209,7 +217,7 @@ const styles = StyleSheet.create({
     color: '#fafafa',
   },
   icon: {
-    marginLeft: 10,
+    marginHorizontal: 10,
   },
   dropdown: {
     width: '95%',
@@ -218,8 +226,9 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 8,
     padding: 8,
-    marginVertical: 8,
-    backgroundColor: '#fafafa',
+    marginTop: 15,
+    marginBottom: 10,
+    backgroundColor: '#1699B4',
   },
   placeholderStyle: {
     fontSize: 16,
@@ -231,5 +240,5 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  
+
 });

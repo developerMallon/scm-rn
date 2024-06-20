@@ -1,7 +1,7 @@
 import { StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useSession } from "../../../context/ctx";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { config } from '../../../../config';
 
 export default function Home() {
@@ -22,7 +22,6 @@ export default function Home() {
       )}
       <Text style={styles.messageText}>Seja bem-vindo(a) ao.</Text>
       <Text style={[styles.messageText, styles.messageApp]}>APP Mallon.</Text>
-
     </View>
   );
 }

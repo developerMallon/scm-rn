@@ -45,7 +45,7 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="scm"
+          name="scm/index"
           options={{
             title: "SCM",
             tabBarIcon: ({ color, focused, size }) => {
