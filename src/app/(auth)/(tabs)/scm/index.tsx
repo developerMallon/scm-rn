@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, View, Pressable, TextInput } from "react-native";
 import { Text } from "@/components/Themed";
 import { useSession } from "@/context/ctx";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import api from '@/services/api';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -54,20 +54,10 @@ export default function Scm() {
     }
   };
 
-
   useEffect(() => {
     getTickets();
   }, [selectedValue]);
-
-  // if (loading) {
-  //   return (
-  //     <View style={styles.container}>
-  //       <ActivityIndicator size="large" color="#FAFAFA" />
-  //       <Text style={styles.messageText}>Carregando ...</Text>
-  //     </View>
-  //   );
-  // }
-
+  
   return (
     <View style={styles.container}>
       {/* <Text style={styles.messageText}>SCM Mallon</Text> */}
@@ -106,42 +96,44 @@ export default function Scm() {
           />
         )}
       />
-
-      { loading && (
+      {/* Se estiver fazendo o loadig exibe o spinner */}
+      {loading && (
         <View style={styles.container}>
-        <ActivityIndicator size="large" color="#FAFAFA" />
-        <Text style={styles.messageText}>Carregando ...</Text>
-      </View>
+          <ActivityIndicator size="large" color="#FAFAFA" />
+          <Text style={styles.messageText}>Carregando ...</Text>
+        </View>
       )}
-
-      { !loading && (
-      <FlatList
-        style={styles.flatlist}
-        data={tickets}
-        keyExtractor={(item) => item.id.toString()}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => (
-          <View style={styles.ticketContainer}>
-            <View style={styles.columnStart}>
-              <Text style={styles.ticketId}>{item.id}</Text>
+      {/* Se já tiver concluído o loading dos dados vai exibi-los aqui */}
+      {!loading && (
+        <FlatList
+          style={styles.flatlist}
+          data={tickets}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <View style={styles.ticketContainer}>
+              <View style={styles.columnStart}>
+                <Text style={styles.ticketId}>{item.id}</Text>
+              </View>
+              <View style={styles.centerColumn}>
+                <Text style={styles.ticketClient}>
+                  {item.client.first_name} {item.client.last_name}
+                </Text>
+                <Text style={styles.ticketComplaint}>
+                  {item.complaint.length > 95 ? `${item.complaint.replace(/\n/g, ' ').slice(0, 95)}...` : item.complaint}
+                </Text>
+              </View>
+              <View style={styles.columnEnd}>
+                <TouchableOpacity style={styles.editButton} onPress={() => { /* Função para editar */ }}>
+                  <Link href={`/scm/${item.id}`}>
+                    <FontAwesomeIcon name="edit" size={25} color="#1bb6c8" />
+                  </Link>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.centerColumn}>
-              <Text style={styles.ticketClient}>
-                {item.client.first_name} {item.client.last_name}
-              </Text>
-              <Text style={styles.ticketComplaint}>
-                {item.complaint.length > 95 ? `${item.complaint.replace(/\n/g, ' ').slice(0, 95)}...` : item.complaint}
-              </Text>
-            </View>
-            <View style={styles.columnEnd}>
-              <TouchableOpacity style={styles.editButton} onPress={() => { /* Função para editar */ }}>
-                <FontAwesomeIcon name="edit" size={25} color="#1bb6c8" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      />)}
+          )}
+        />)}
       {/* 
       <Pressable style={styles.button} onPress={() => { router.replace('/'); }}>
         <Text style={styles.buttonText}>Voltar</Text>

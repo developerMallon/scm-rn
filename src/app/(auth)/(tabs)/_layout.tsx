@@ -1,11 +1,10 @@
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import MaterialIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from "expo-router";
 import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import { useNavigation } from '@react-navigation/native';
 import { useSession } from "@/context/ctx";
 
@@ -38,7 +37,7 @@ export default function TabLayout() {
             title: "APP Mallon",
             tabBarIcon: ({ color, focused, size }) => {
               if (focused) {
-                return <MaterialIcons name="home-circle" color="#1BB6C8" size={40} />
+                return <MaterialIcons name="home-circle" color="#1BB6C8" size={35} />
               }
               return <MaterialIcons name="home-circle-outline" color={color} size={size} />
             }
@@ -50,7 +49,7 @@ export default function TabLayout() {
             title: "SCM",
             tabBarIcon: ({ color, focused, size }) => {
               if (focused) {
-                return <Ionicons name="ticket" color="#1BB6C8" size={40} />
+                return <Ionicons name="ticket" color="#1BB6C8" size={35} />
               }
               return <Ionicons name="ticket-outline" color={color} size={size} />
             }
@@ -62,7 +61,7 @@ export default function TabLayout() {
             title: "Indicadores",
             tabBarIcon: ({ color, focused, size }) => {
               if (focused) {
-                return <Ionicons name="bar-chart" color="#1BB6C8" size={40} />
+                return <Ionicons name="bar-chart" color="#1BB6C8" size={35} />
               }
               return <Ionicons name="bar-chart-outline" color={color} size={size} />
             }
@@ -74,7 +73,7 @@ export default function TabLayout() {
             title: "Novos",
             tabBarIcon: ({ color, focused, size }) => {
               if (focused) {
-                return <MaterialIcons name="truck-check" color="#1BB6C8" size={40} />
+                return <MaterialIcons name="truck-check" color="#1BB6C8" size={35} />
               }
               return <MaterialIcons name="truck-check-outline" color={color} size={size} />
             }
@@ -86,7 +85,7 @@ export default function TabLayout() {
             title: "Usados",
             tabBarIcon: ({ color, focused, size }) => {
               if (focused) {
-                return <MaterialIcons name="truck" color="#1BB6C8" size={40} />
+                return <MaterialIcons name="truck" color="#1BB6C8" size={35} />
               }
               return <MaterialIcons name="truck-outline" color={color} size={size} />
             }
@@ -99,7 +98,7 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   logoutButton: {
-    marginRight: 10,
+    marginRight: 20,
   },
   logoutText: {
     color: '#fafafa',
