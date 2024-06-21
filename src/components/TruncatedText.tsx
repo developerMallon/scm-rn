@@ -31,7 +31,7 @@ const TruncatedText: React.FC<TruncatedTextProps> = ({ title, text }) => {
         {displayedText}
       </Text>
       {shouldShowReadMore && (
-        <TouchableOpacity onPress={toggleShowFullText}>
+        <TouchableOpacity style={styles.truncatedContainer} onPress={toggleShowFullText}>
           <Text style={styles.readMore}>
           <FontAwesome5 name={showFullText ? 'chevron-up' : 'chevron-down'} size={20} color="#1bb6c8" />
             {/* {showFullText ? 'Mostrar menos' : 'Mostrar mais'} */}
@@ -62,6 +62,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'right',
   },
+  truncatedContainer: {
+    justifyContent: 'space-between'
+  }
 });
 
 export default TruncatedText;

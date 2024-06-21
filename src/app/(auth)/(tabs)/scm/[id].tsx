@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router, useLocalSearchParams, Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/context/ctx';
@@ -6,6 +6,7 @@ import api from '@/services/api';
 import TruncatedText from '@/components/TruncatedText';
 import FieldShowText from '@/components/FieldShowText';
 import ExpandableView from '@/components/ExpandableView';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 type FollowUp = {
   id: number
@@ -87,25 +88,40 @@ export default function User() {
   const { id } = useLocalSearchParams()
   const [loading, setLoading] = useState<boolean>(true);
   const [ticket, setTicket] = useState<Ticket>();
+  const [ticketFiles, setTicketFiles] = useState<[]>();
+
+
+  const getTicketFiles = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/tickets/${id}/list/`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token}`,
+        },
+      });
+
+      setTicketFiles(response.data['filenames']);
+
+    } catch (error) {
+      console.error("Erro ao buscar arquivos:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
   const getTicketDetail = async () => {
-
-    // Verifica se a sessão é válida. Caso contrário força a rota de login
-    if (!session) {
-      router.replace("/");
-      return;
-    }
-    //   setLoading(true);
+    setLoading(true);
     try {
       const response = await api.get(`/complaint/${id}`, {
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${session.access_token}`,
+          "Authorization": `Bearer ${session?.access_token}`,
         },
       });
 
       setTicket(response.data[0]);
-
 
     } catch (error) {
       console.error("Erro ao buscar tickets:", error);
@@ -115,11 +131,17 @@ export default function User() {
   };
 
 
-  // console.log(ticket?.id)
-
   useEffect(() => {
+    // Verifica se a sessão é válida. Caso contrário força a rota de login
+    if (!session) {
+      router.replace("/");
+      return;
+    }
+
     getTicketDetail();
+    getTicketFiles()
   }, [id]);
+
 
   return (
     <View style={styles.container}>
@@ -188,9 +210,18 @@ export default function User() {
               </ExpandableView>
             )}
 
-
-
-
+            {ticketFiles && (
+              <ExpandableView title="Arquivos">
+                {ticketFiles.map((name, index) => (
+                  <Pressable key={index} onPress={() => { console.log(`Pressionou: ${index} - ${name}`) }}>
+                    <View style={styles.row}>
+                      <Text style={styles.fileNames}>{name}</Text>
+                      <AntDesign style={styles.downloadIcon} name='clouddownload' size={30} color="#1bb6c8" />
+                    </View>
+                  </Pressable>
+                ))}
+              </ExpandableView>
+            )}
 
           </View>
         </ScrollView>
@@ -227,4 +258,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f8f8',
   },
+  fileNames: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 6,
+    marginVertical: 2
+  },
+  downloadIcon: {
+    marginRight: 10
+  }
 })

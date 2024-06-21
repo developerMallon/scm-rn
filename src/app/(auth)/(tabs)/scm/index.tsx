@@ -121,7 +121,7 @@ export default function Scm() {
                   {item.client.first_name} {item.client.last_name}
                 </Text>
                 <Text style={styles.ticketComplaint}>
-                  {item.complaint.length > 95 ? `${item.complaint.replace(/\n/g, ' ').slice(0, 95)}...` : item.complaint}
+                  {item.complaint.length > 90 ? `${item.complaint.replace(/\n/g, ' ').slice(0, 90)}...` : item.complaint}
                 </Text>
               </View>
               <View style={styles.columnEnd}>

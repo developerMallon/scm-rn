@@ -31,7 +31,7 @@ export default function TabLayout() {
 
   const HeaderRight = () => (
     <Pressable onPress={handleLogout} style={styles.logoutButton}>
-      <MaterialIcons name="location-exit" color="#fafafa" size={30} />
+      <MaterialIcons name="exit-to-app" color="#fafafa" size={30} />
     </Pressable>
   );
 

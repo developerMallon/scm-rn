@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   content: {
-    padding: 16,
+    paddingVertical: 16,
     backgroundColor: '#fff',
   },
 });
