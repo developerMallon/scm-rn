@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import MaterialIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,14 +7,30 @@ import { Tabs } from "expo-router";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useNavigation } from '@react-navigation/native';
 import { useSession } from "@/context/ctx";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   const { signOut, session } = useSession();
 
+  const handleLogout = () => {
+    Alert.alert(
+      "Confirmação de Saída",
+      "Deseja fechar o App?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        { text: "Sair", onPress: () => signOut() }
+      ],
+      { cancelable: false }
+    );
+  }
+
   const HeaderRight = () => (
-    <Pressable onPress={() => signOut()} style={styles.logoutButton}>
+    <Pressable onPress={handleLogout} style={styles.logoutButton}>
       <MaterialIcons name="location-exit" color="#fafafa" size={30} />
     </Pressable>
   );
@@ -89,6 +105,17 @@ export default function TabLayout() {
               }
               return <MaterialIcons name="truck-outline" color={color} size={size} />
             }
+          }}
+        />
+        <Tabs.Screen
+          name="scm/[id]"
+          options={{
+            title: "Detalhes Ticket",
+            tabBarIcon: ({ color, focused, size }) => (
+              focused ?
+              <AntDesign name="playcircleo" color="#1BB6C8" size={35} /> :
+              <AntDesign name="play" color={color} size={size} />
+            ),
           }}
         />
       </Tabs>
