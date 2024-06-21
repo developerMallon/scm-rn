@@ -4,10 +4,15 @@ import { useEffect, useState } from 'react';
 import { useSession } from '@/context/ctx';
 import api from '@/services/api';
 
+type type = {
+  id: number,
+  name: string
+}
+
 type Ticket = {
   id: number;
   created_at: string;
-  requester: { first_name: string; last_name: string };
+  requester: { first_name: string; last_name: string; type: object};
   client: { first_name: string; last_name: string };
   complaint: string;
 };
@@ -76,12 +81,22 @@ export default function User() {
       )}
 
       {ticket && (
-        <>
-          <Text>Ticket ID: {ticket.id}</Text>
-          <Text>Data de Criação: {formatDate(ticket.created_at)}</Text>
-          <Text>Cliente: {ticket.client.first_name} {ticket.client.last_name}</Text>
-          <Text>Reclamação: {ticket.complaint}</Text>
-        </>
+        <View style={styles.container}>
+          <View style={styles.row}>
+            <Text>Ticket: {ticket.id}</Text>
+            <Text>Criado: {formatDate(ticket.created_at)}</Text>
+          </View>
+          <View style={styles.row}>
+          <Text>Ticket: {ticket.requester.first_name} {ticket.requester.last_name}</Text>
+          <Text>Ticket: {ticket.type.name}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text>Cliente: {ticket.client.first_name} {ticket.client.last_name}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text>Reclamação: {ticket.complaint}</Text>
+          </View>
+        </View>
       )}
     </View>
   );
@@ -101,4 +116,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginVertical: 10,
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 4,
+    margin: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ccc'
+  }
 })
