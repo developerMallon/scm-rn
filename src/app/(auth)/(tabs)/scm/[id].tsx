@@ -12,59 +12,19 @@ import { encode } from 'base-64';
 import * as FileSystem from 'expo-file-system';
 import InputModal from '@/components/inputModal';
 import updateFollowUP from '@/services/updateFollowUP';
+import getTicketFiles from '@/services/getTicketFiles'
+import getTicketDetails from '@/services/getTicketDetails';
 
-export default function User() {
+export default function Ticket() {
   const { signOut, session } = useSession();
   const { id } = useLocalSearchParams()
   const [loading, setLoading] = useState<boolean>(true);
-  const [ticket, setTicket] = useState<Ticket>();
+  const [ticket, setTicket] = useState<Ticket | null>(null);
   const [ticketFiles, setTicketFiles] = useState<string[]>([]);
   const [loadingFiles, setLoadingFiles] = useState<boolean[]>([]);
   const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
   const [isFollowUpModalVisible, setIsFollowUpModalVisible] = useState(false);
 
-  const getTicketFiles = async () => {
-    setLoading(true);
-    setTicketFiles([]);
-
-    try {
-      const response = await api.get(`/tickets/${id}/list/`, {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${session?.access_token}`,
-        },
-      });
-
-      if (response.data['filenames']) {
-        setTicketFiles(response.data['filenames']);
-        setLoadingFiles(Array(response.data['filenames'].length).fill(false));
-      }
-
-    } catch (error) {
-      console.error("Erro ao buscar arquivos:", error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const getTicketDetail = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get(`/complaint/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${session?.access_token}`,
-        },
-      });
-
-      setTicket(response.data[0]);
-
-    } catch (error) {
-      console.error("Erro ao buscar tickets:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     // Verifica se a sessão é válida. Caso contrário força a rota de login
@@ -73,8 +33,24 @@ export default function User() {
       return;
     }
 
-    getTicketDetail();
-    getTicketFiles()
+    const ticketDetails = async () => {
+      setLoading(true);
+      const details = await getTicketDetails(id as string, session?.access_token as string);
+      setTicket(details)
+      console.log(details)
+    }
+
+    const ticketFilesName = async () => {
+      setLoading(true);
+      const files = await getTicketFiles(id as string, session?.access_token as string);
+      setTicketFiles(files);
+      setLoadingFiles(Array(files.length).fill(false));
+      setLoading(false);
+    }
+
+    ticketDetails()
+    ticketFilesName()
+
   }, [id]);
 
 
