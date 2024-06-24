@@ -11,7 +11,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { encode } from 'base-64';
 import * as FileSystem from 'expo-file-system';
 import InputModal from '@/components/inputModal';
-import updateFollowUP from '@/services/updateFollowUP';
+import updateFollowUpService from '@/services/updateFollowUpService';
 import getTicketFiles from '@/services/getTicketFiles'
 import getTicketDetails from '@/services/getTicketDetails';
 
@@ -37,7 +37,6 @@ export default function Ticket() {
       setLoading(true);
       const details = await getTicketDetails(id as string, session?.access_token as string);
       setTicket(details)
-      console.log(details)
     }
 
     const ticketFilesName = async () => {
@@ -134,11 +133,11 @@ export default function Ticket() {
   };
 
   // Método para inserir um novo ACOMPANHAMENTO (FOLLOWUP) no banco de dados
-  const handleSaveFollowUp = (followUp: string) => {
+  const handleSaveFollowUp = (followUp: string, ticketId: number) => {
     if (followUp) {
-      // updateFollowUP(followUp)
-      alert(followUp)
-      return
+      updateFollowUpService(ticketId, followUp)
+      
+      // setIsFollowUpModalVisible(false); // Fecha o modal após salvar
     }
   };
 
@@ -183,75 +182,69 @@ export default function Ticket() {
               <TruncatedText title="Reclamação:" text={ticket.complaint} />
             </View>
 
-            {/* {ticket.technical_reports[0] && ( */}
-              <ExpandableView title="Parecer Técnico">
-                {ticket.technical_reports[0] && (
+            <ExpandableView title="Parecer Técnico" count={ticket.technical_reports.length}>
+              {ticket.technical_reports[0] && (
+                <View style={styles.row}>
+                  <TruncatedText
+                    title={`${formatDate(ticket.technical_reports[0].created_at)} - ${ticket.technical_reports[0].user.first_name} ${ticket.technical_reports[0].user.last_name}`}
+                    text={ticket.technical_reports[0].details} />
+                </View>
+              )}
+              <Pressable style={styles.addButton} onPress={handleAddReport}>
+                <Text style={styles.addButtonText}>Adicionar</Text>
+              </Pressable>
+              <InputModal
+                isVisible={isCommentModalVisible}
+                onClose={() => setIsCommentModalVisible(false)}
+                onSave={handleSaveReport}
+                title="Adicionar Parecer Técnico"
+                placeholder="Descreva o parecer técnico sobre o problema."
+              />
+            </ExpandableView>
+
+            <ExpandableView title="Acompanhamentos SCM" count={ticket.follow_ups.length}>
+              {ticket?.follow_ups.map((followUp, index) => (
+                <View key={index} style={styles.row}>
+                  <TruncatedText
+                    title={`${formatDate(followUp.created_at)} - ${followUp.user.first_name} ${followUp.user.last_name}`}
+                    text={followUp.details}
+                  />
+                </View>
+              ))}
+              <Pressable style={styles.addButton} onPress={handleAddFollowUp}>
+                <Text style={styles.addButtonText}>Adicionar</Text>
+              </Pressable>
+              <InputModal
+                isVisible={isFollowUpModalVisible}
+                onClose={() => setIsFollowUpModalVisible(false)}
+                onSave={(followUp: string) => handleSaveFollowUp(followUp, ticket.id)}
+                title="Adicionar acompanhamento"
+                placeholder="Descreva o acompanhamento."
+              />
+            </ExpandableView>
+
+            <ExpandableView title="Arquivos" count={ticketFiles.length}>
+              {ticketFiles.map((name, index) => (
+                <Pressable key={index} onPress={() => handleFilePress(ticket.id, name, index)}>
                   <View style={styles.row}>
-                    <TruncatedText
-                      title={`${formatDate(ticket.technical_reports[0].created_at)} - ${ticket.technical_reports[0].user.first_name} ${ticket.technical_reports[0].user.last_name}`}
-                      text={ticket.technical_reports[0].details} />
+                    <Text>{name}</Text>
+                    {loadingFiles[index] ?
+                      (<ActivityIndicator style={styles.indicator} animating={true} color='#1bb6c8' />) :
+                      (<AntDesign style={styles.downloadIcon} name='clouddownload' size={30} color="#1bb6c8" />)}
                   </View>
-                )}
-                <Pressable style={styles.addButton} onPress={handleAddReport}>
-                  <Text style={styles.addButtonText}>Adicionar</Text>
                 </Pressable>
-                <InputModal
-                  isVisible={isCommentModalVisible}
-                  onClose={() => setIsCommentModalVisible(false)}
-                  onSave={handleSaveReport}
-                  title="Adicionar Parecer Técnico"
-                  placeholder="Descreva o parecer técnico sobre o problema."
-                />
-              </ExpandableView>
-            {/* )} */}
-
-            {/* {ticket.follow_ups[0] && ( */}
-              <ExpandableView title="Acompanhamentos SCM">
-                {ticket?.follow_ups.map((followUp, index) => (
-                  <View key={index} style={styles.row}>
-                    <TruncatedText
-                      title={`${formatDate(followUp.created_at)} - ${followUp.user.first_name} ${followUp.user.last_name}`}
-                      text={followUp.details}
-                    />
-                  </View>
-                ))}
-                <Pressable style={styles.addButton} onPress={handleAddFollowUp}>
-                  <Text style={styles.addButtonText}>Adicionar</Text>
-                </Pressable>
-                <InputModal
-                  isVisible={isFollowUpModalVisible}
-                  onClose={() => setIsFollowUpModalVisible(false)}
-                  onSave={handleSaveFollowUp}
-                  title="Adicionar acompanhamento"
-                  placeholder="Descreva o acompanhamento."
-                />
-              </ExpandableView>
-            {/* )} */}
-
-            {/* {ticketFiles.length > 0 && ( */}
-              <ExpandableView title="Arquivos">
-                {ticketFiles.map((name, index) => (
-                  <Pressable key={index} onPress={() => handleFilePress(ticket.id, name, index)}>
-                    <View style={styles.row}>
-                      <Text>{name}</Text>
-                      {loadingFiles[index] ?
-                        (<ActivityIndicator style={styles.indicator} animating={true} color='#1bb6c8' />) :
-                        (<AntDesign style={styles.downloadIcon} name='clouddownload' size={30} color="#1bb6c8" />)}
-                    </View>
-                  </Pressable>
-                ))}
-                <Pressable style={styles.addButton} onPress={handleAddReport}>
-                  <Text style={styles.addButtonText}>Adicionar</Text>
-                </Pressable>
-                <InputModal
-                  isVisible={isCommentModalVisible}
-                  onClose={() => setIsCommentModalVisible(false)}
-                  onSave={handleSaveReport}
-                  title="Adicionar Arquivos"
-                  placeholder="Selecione o arquivo e clique em enviar."
-                />
-              </ExpandableView>
-            {/* )} */}
+              ))}
+              <Pressable style={styles.addButton} onPress={handleAddReport}>
+                <Text style={styles.addButtonText}>Adicionar</Text>
+              </Pressable>
+              <InputModal
+                isVisible={isCommentModalVisible}
+                onClose={() => setIsCommentModalVisible(false)}
+                onSave={handleSaveReport}
+                title="Adicionar Arquivos"
+                placeholder="Selecione o arquivo e clique em enviar."
+              />
+            </ExpandableView>
 
           </View>
         </ScrollView>
