@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 
 const { signOut, session } = useSession();
 
-const updateFollowUpService = async (ticketId: number, followUp: string) => {
+const addFollowUpService = async (ticketId: number, followUp: string) => {
 
     console.log(`Ticket ID: ${ticketId}, FollowUp: ${followUp.toUpperCase()}`);
 
@@ -29,4 +29,4 @@ const updateFollowUpService = async (ticketId: number, followUp: string) => {
     // }
 }
 
-export default updateFollowUpService
+export default addFollowUpService

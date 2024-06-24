@@ -11,7 +11,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { encode } from 'base-64';
 import * as FileSystem from 'expo-file-system';
 import InputModal from '@/components/inputModal';
-import updateFollowUpService from '@/services/updateFollowUpService';
+import addFollowUpService from '@/services/addFollowUpService';
 import getTicketFiles from '@/services/getTicketFiles'
 import getTicketDetails from '@/services/getTicketDetails';
 
@@ -135,7 +135,7 @@ export default function Ticket() {
   // Método para inserir um novo ACOMPANHAMENTO (FOLLOWUP) no banco de dados
   const handleSaveFollowUp = (followUp: string, ticketId: number) => {
     if (followUp) {
-      updateFollowUpService(ticketId, followUp)
+      addFollowUpService(ticketId, followUp)
       
       // setIsFollowUpModalVisible(false); // Fecha o modal após salvar
     }
