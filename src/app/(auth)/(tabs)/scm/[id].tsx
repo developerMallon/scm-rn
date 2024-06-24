@@ -1,5 +1,5 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { router, useLocalSearchParams, Link } from 'expo-router';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, Platform } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/context/ctx';
 import api from '@/services/api';
@@ -7,6 +7,9 @@ import TruncatedText from '@/components/TruncatedText';
 import FieldShowText from '@/components/FieldShowText';
 import ExpandableView from '@/components/ExpandableView';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { encode } from 'base-64';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 
 type FollowUp = {
   id: number
@@ -88,8 +91,7 @@ export default function User() {
   const { id } = useLocalSearchParams()
   const [loading, setLoading] = useState<boolean>(true);
   const [ticket, setTicket] = useState<Ticket>();
-  const [ticketFiles, setTicketFiles] = useState<[]>();
-
+  const [ticketFiles, setTicketFiles] = useState<string[]>([]);
 
   const getTicketFiles = async () => {
     setLoading(true);
@@ -110,7 +112,6 @@ export default function User() {
     }
   }
 
-
   const getTicketDetail = async () => {
     setLoading(true);
     try {
@@ -130,7 +131,6 @@ export default function User() {
     }
   };
 
-
   useEffect(() => {
     // Verifica se a sessão é válida. Caso contrário força a rota de login
     if (!session) {
@@ -143,9 +143,53 @@ export default function User() {
   }, [id]);
 
 
+  const handleFilePress = async (ticket_id: number, filename: string) => {
+    try {
+      const response = await api.get(`/tickets/${ticket_id}/download/${filename}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token}`,
+        },
+        responseType: 'arraybuffer', // importante para baixar arquivos
+      });
+
+      // Verifique o tamanho do arquivo antes de prosseguir
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+
+    if (response.data.byteLength > MAX_FILE_SIZE) {
+      throw new Error("File too large to process");
+    }
+
+      // Converte arraybuffer para Uint8Array
+    const uint8Array = new Uint8Array(response.data);
+
+    // Converte Uint8Array para string usando método mais eficiente
+    const binaryString = Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join('');
+    const base64String = encode(binaryString);
+
+
+      // Cria um URI local para o arquivo
+      const fileUri = `${FileSystem.cacheDirectory}${filename}`;
+
+      // Escreve os dados base64 no arquivo
+      await FileSystem.writeAsStringAsync(fileUri, base64String, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Navega para o visualizador de documentos e passa o URI
+      router.push({
+        pathname: `/scm/files_page`,
+        params: { ticket_id: ticket_id, uri: fileUri, name: filename }
+      });
+
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+
+
   return (
     <View style={styles.container}>
-
       {/* Se estiver fazendo o loadig exibe o spinner */}
       {loading && (
         <View style={styles.containerLoading}>
@@ -196,7 +240,6 @@ export default function User() {
               </ExpandableView>
             )}
 
-
             {ticket.follow_ups[0] && (
               <ExpandableView title="Acompanhamentos SCM">
                 {ticket?.follow_ups.map((followUp, index) => (
@@ -210,10 +253,14 @@ export default function User() {
               </ExpandableView>
             )}
 
-            {ticketFiles && (
+            {/* <View style={{ backgroundColor: '#ccc', padding: 10, alignItems: 'center' }}>
+              <Link href={"/view"}>Files</Link>
+            </View> */}
+
+            {ticketFiles.length > 0 && (
               <ExpandableView title="Arquivos">
                 {ticketFiles.map((name, index) => (
-                  <Pressable key={index} onPress={() => { console.log(`Pressionou: ${index} - ${name}`) }}>
+                  <Pressable key={index} onPress={() => handleFilePress(ticket.id, name)}>
                     <View style={styles.row}>
                       <Text style={styles.fileNames}>{name}</Text>
                       <AntDesign style={styles.downloadIcon} name='clouddownload' size={30} color="#1bb6c8" />
@@ -267,4 +314,4 @@ const styles = StyleSheet.create({
   downloadIcon: {
     marginRight: 10
   }
-})
+});
