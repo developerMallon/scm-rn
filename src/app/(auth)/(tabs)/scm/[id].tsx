@@ -9,7 +9,6 @@ import ExpandableView from '@/components/ExpandableView';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { encode } from 'base-64';
 import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
 
 type FollowUp = {
   id: number
@@ -92,6 +91,8 @@ export default function User() {
   const [loading, setLoading] = useState<boolean>(true);
   const [ticket, setTicket] = useState<Ticket>();
   const [ticketFiles, setTicketFiles] = useState<string[]>([]);
+  const [loadingFile, setLoadingFile] = useState<boolean>(false);
+  const [loadingFiles, setLoadingFiles] = useState<boolean[]>(Array(ticketFiles.length).fill(false));
 
   const getTicketFiles = async () => {
     setLoading(true);
@@ -143,8 +144,14 @@ export default function User() {
   }, [id]);
 
 
-  const handleFilePress = async (ticket_id: number, filename: string) => {
+  const handleFilePress = async (ticket_id: number, filename: string, index: number) => {
     try {
+      setLoadingFiles(prevLoadingFiles => {
+        const newLoadingFiles = [...prevLoadingFiles];
+        newLoadingFiles[index] = true;
+        return newLoadingFiles;
+      });
+
       const response = await api.get(`/tickets/${ticket_id}/download/${filename}`, {
         headers: {
           "Content-Type": "application/json",
@@ -176,13 +183,25 @@ export default function User() {
         encoding: FileSystem.EncodingType.Base64,
       });
 
+      setLoadingFiles(prevLoadingFiles => {
+        const newLoadingFiles = [...prevLoadingFiles];
+        newLoadingFiles[index] = false;
+        return newLoadingFiles;
+      });
+
       // Navega para o visualizador de documentos e passa o URI
-      router.push({
+      router.replace({
         pathname: `/scm/files_page`,
         params: { ticket_id: ticket_id, uri: fileUri, name: filename }
       });
-
+      
     } catch (error) {
+      setLoadingFiles(prevLoadingFiles => {
+        const newLoadingFiles = [...prevLoadingFiles];
+        newLoadingFiles[index] = false;
+        return newLoadingFiles;
+      });
+
       console.error("Error downloading file:", error);
     }
   };
@@ -253,17 +272,15 @@ export default function User() {
               </ExpandableView>
             )}
 
-            {/* <View style={{ backgroundColor: '#ccc', padding: 10, alignItems: 'center' }}>
-              <Link href={"/view"}>Files</Link>
-            </View> */}
-
             {ticketFiles.length > 0 && (
               <ExpandableView title="Arquivos">
                 {ticketFiles.map((name, index) => (
-                  <Pressable key={index} onPress={() => handleFilePress(ticket.id, name)}>
+                  <Pressable key={index} onPress={() => handleFilePress(ticket.id, name, index)}>
                     <View style={styles.row}>
-                      <Text style={styles.fileNames}>{name}</Text>
-                      <AntDesign style={styles.downloadIcon} name='clouddownload' size={30} color="#1bb6c8" />
+                      <Text>{name}</Text>
+                      {loadingFiles[index] ? 
+                        (<ActivityIndicator style={styles.indicator} animating={true} color='#1bb6c8' />) :
+                        (<AntDesign style={styles.downloadIcon} name='clouddownload' size={30} color="#1bb6c8" />)}
                     </View>
                   </Pressable>
                 ))}
@@ -313,5 +330,9 @@ const styles = StyleSheet.create({
   },
   downloadIcon: {
     marginRight: 10
+  },
+  indicator: {
+    marginRight: 15,
+    paddingVertical: 5
   }
 });
