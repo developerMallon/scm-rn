@@ -30,7 +30,7 @@ const InputModal: React.FC<InputModalProps> = ({ isVisible, onClose, onSave, tit
           value={input}
           onChangeText={setInput}
         />
-        <Button title="Save" onPress={handleSave} />
+        <Button title="Salvar" onPress={handleSave} />
       </View>
     </Modal>
   );
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
   },

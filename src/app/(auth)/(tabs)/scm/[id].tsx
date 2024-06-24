@@ -9,7 +9,6 @@ import ExpandableView from '@/components/ExpandableView';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { encode } from 'base-64';
 import * as FileSystem from 'expo-file-system';
-import CommentModal from '@/components/inputModal';
 import InputModal from '@/components/inputModal';
 
 type FollowUp = {
@@ -93,13 +92,14 @@ export default function User() {
   const [loading, setLoading] = useState<boolean>(true);
   const [ticket, setTicket] = useState<Ticket>();
   const [ticketFiles, setTicketFiles] = useState<string[]>([]);
-  const [loadingFiles, setLoadingFiles] = useState<boolean[]>(Array(ticketFiles.length).fill(false));
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [loadingFiles, setLoadingFiles] = useState<boolean[]>([]);
   const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
   const [isFollowUpModalVisible, setIsFollowUpModalVisible] = useState(false);
 
   const getTicketFiles = async () => {
     setLoading(true);
+    setTicketFiles([]);
+
     try {
       const response = await api.get(`/tickets/${id}/list/`, {
         headers: {
@@ -108,7 +108,10 @@ export default function User() {
         },
       });
 
-      setTicketFiles(response.data['filenames']);
+      if (response.data['filenames']) {
+        setTicketFiles(response.data['filenames']);
+        setLoadingFiles(Array(response.data['filenames'].length).fill(false));
+      }
 
     } catch (error) {
       console.error("Erro ao buscar arquivos:", error);
