@@ -9,6 +9,8 @@ import ExpandableView from '@/components/ExpandableView';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { encode } from 'base-64';
 import * as FileSystem from 'expo-file-system';
+import CommentModal from '@/components/inputModal';
+import InputModal from '@/components/inputModal';
 
 type FollowUp = {
   id: number
@@ -92,6 +94,9 @@ export default function User() {
   const [ticket, setTicket] = useState<Ticket>();
   const [ticketFiles, setTicketFiles] = useState<string[]>([]);
   const [loadingFiles, setLoadingFiles] = useState<boolean[]>(Array(ticketFiles.length).fill(false));
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
+  const [isFollowUpModalVisible, setIsFollowUpModalVisible] = useState(false);
 
   const getTicketFiles = async () => {
     setLoading(true);
@@ -206,6 +211,23 @@ export default function User() {
   };
 
 
+  const handleAddComment = () => {
+    setIsCommentModalVisible(true);
+  };
+  const handleAddFollowUp = () => {
+    setIsFollowUpModalVisible(true);
+  };
+
+  const handleSaveComment = (comment: string) => {
+    // setComments(prevComments => [...prevComments, comment]);
+    alert(comment)
+  };
+  const handleSaveFollowUp = (followUp: string) => {
+    // setFollowUps(prevFollowUps => [...prevFollowUps, followUp]);
+    alert(followUp)
+  };
+
+
   return (
     <View style={styles.container}>
       {/* Se estiver fazendo o loadig exibe o spinner */}
@@ -255,10 +277,16 @@ export default function User() {
                       text={ticket.technical_reports[0].details} />
                   </View>
                 )}
-                <Pressable style={styles.addButton} onPress={() => { Alert.alert('Adicionar', 'Deseja adicionar') }}>
-                  {/* <AntDesign name="pluscircle" size={24} color="#1bb6c8" /> */}
+                <Pressable style={styles.addButton} onPress={handleAddComment}>
                   <Text style={styles.addButtonText}>Adicionar</Text>
                 </Pressable>
+                <InputModal
+                  isVisible={isCommentModalVisible}
+                  onClose={() => setIsCommentModalVisible(false)}
+                  onSave={handleSaveComment}
+                  title="Adicionar Parecer Técnico"
+                  placeholder="Descreva o parecer técnico sobre o problema."
+                />
               </ExpandableView>
             )}
 
@@ -272,10 +300,16 @@ export default function User() {
                     />
                   </View>
                 ))}
-                <Pressable style={styles.addButton} onPress={() => { Alert.alert('Adicionar', 'Deseja adicionar') }}>
-                  {/* <AntDesign name="pluscircle" size={24} color="#1bb6c8" /> */}
+                <Pressable style={styles.addButton} onPress={handleAddFollowUp}>
                   <Text style={styles.addButtonText}>Adicionar</Text>
                 </Pressable>
+                <InputModal
+                  isVisible={isFollowUpModalVisible}
+                  onClose={() => setIsFollowUpModalVisible(false)}
+                  onSave={handleSaveFollowUp}
+                  title="Adicionar acompanhamento"
+                  placeholder="Descreva o acompanhamento."
+                />
               </ExpandableView>
             )}
 
@@ -291,10 +325,16 @@ export default function User() {
                     </View>
                   </Pressable>
                 ))}
-                <Pressable style={styles.addButton} onPress={() => { Alert.alert('Adicionar', 'Deseja adicionar') }}>
-                  {/* <AntDesign name="pluscircle" size={24} color="#1bb6c8" /> */}
+                <Pressable style={styles.addButton} onPress={handleAddComment}>
                   <Text style={styles.addButtonText}>Adicionar</Text>
                 </Pressable>
+                <InputModal
+                  isVisible={isCommentModalVisible}
+                  onClose={() => setIsCommentModalVisible(false)}
+                  onSave={handleSaveComment}
+                  title="Adicionar Arquivos"
+                  placeholder="Selecione o arquivo e clique em enviar."
+                />
               </ExpandableView>
             )}
 
