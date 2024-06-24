@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, Platform } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, Platform, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/context/ctx';
@@ -91,7 +91,6 @@ export default function User() {
   const [loading, setLoading] = useState<boolean>(true);
   const [ticket, setTicket] = useState<Ticket>();
   const [ticketFiles, setTicketFiles] = useState<string[]>([]);
-  const [loadingFile, setLoadingFile] = useState<boolean>(false);
   const [loadingFiles, setLoadingFiles] = useState<boolean[]>(Array(ticketFiles.length).fill(false));
 
   const getTicketFiles = async () => {
@@ -161,18 +160,18 @@ export default function User() {
       });
 
       // Verifique o tamanho do arquivo antes de prosseguir
-    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+      const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
 
-    if (response.data.byteLength > MAX_FILE_SIZE) {
-      throw new Error("File too large to process");
-    }
+      if (response.data.byteLength > MAX_FILE_SIZE) {
+        throw new Error("File too large to process");
+      }
 
       // Converte arraybuffer para Uint8Array
-    const uint8Array = new Uint8Array(response.data);
+      const uint8Array = new Uint8Array(response.data);
 
-    // Converte Uint8Array para string usando método mais eficiente
-    const binaryString = Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join('');
-    const base64String = encode(binaryString);
+      // Converte Uint8Array para string usando método mais eficiente
+      const binaryString = Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join('');
+      const base64String = encode(binaryString);
 
 
       // Cria um URI local para o arquivo
@@ -194,7 +193,7 @@ export default function User() {
         pathname: `/scm/files_page`,
         params: { ticket_id: ticket_id, uri: fileUri, name: filename }
       });
-      
+
     } catch (error) {
       setLoadingFiles(prevLoadingFiles => {
         const newLoadingFiles = [...prevLoadingFiles];
@@ -256,6 +255,10 @@ export default function User() {
                       text={ticket.technical_reports[0].details} />
                   </View>
                 )}
+                <Pressable style={styles.addButton} onPress={() => { Alert.alert('Adicionar', 'Deseja adicionar') }}>
+                  {/* <AntDesign name="pluscircle" size={24} color="#1bb6c8" /> */}
+                  <Text style={styles.addButtonText}>Adicionar</Text>
+                </Pressable>
               </ExpandableView>
             )}
 
@@ -269,6 +272,10 @@ export default function User() {
                     />
                   </View>
                 ))}
+                <Pressable style={styles.addButton} onPress={() => { Alert.alert('Adicionar', 'Deseja adicionar') }}>
+                  {/* <AntDesign name="pluscircle" size={24} color="#1bb6c8" /> */}
+                  <Text style={styles.addButtonText}>Adicionar</Text>
+                </Pressable>
               </ExpandableView>
             )}
 
@@ -278,12 +285,16 @@ export default function User() {
                   <Pressable key={index} onPress={() => handleFilePress(ticket.id, name, index)}>
                     <View style={styles.row}>
                       <Text>{name}</Text>
-                      {loadingFiles[index] ? 
+                      {loadingFiles[index] ?
                         (<ActivityIndicator style={styles.indicator} animating={true} color='#1bb6c8' />) :
                         (<AntDesign style={styles.downloadIcon} name='clouddownload' size={30} color="#1bb6c8" />)}
                     </View>
                   </Pressable>
                 ))}
+                <Pressable style={styles.addButton} onPress={() => { Alert.alert('Adicionar', 'Deseja adicionar') }}>
+                  {/* <AntDesign name="pluscircle" size={24} color="#1bb6c8" /> */}
+                  <Text style={styles.addButtonText}>Adicionar</Text>
+                </Pressable>
               </ExpandableView>
             )}
 
@@ -334,5 +345,17 @@ const styles = StyleSheet.create({
   indicator: {
     marginRight: 15,
     paddingVertical: 5
+  },
+  addButton: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addButtonText: {
+    fontWeight: 'bold',
+    color: '#1bb6c8',
+    marginVertical: 10,
+    marginLeft: 20,
   }
 });

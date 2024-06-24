@@ -29,6 +29,7 @@ const ExpandableView: React.FC<ExpandableViewProps> = ({ title, children }) => {
           {children}
         </View>
       )}
+      
     </View>
   );
 };
@@ -60,6 +61,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: '#fff',
   },
+
 });
 
 export default ExpandableView;
