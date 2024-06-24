@@ -133,11 +133,17 @@ export default function Ticket() {
   };
 
   // Método para inserir um novo ACOMPANHAMENTO (FOLLOWUP) no banco de dados
-  const handleSaveFollowUp = (followUp: string, ticketId: number) => {
-    if (followUp) {
-      addFollowUpService(ticketId, followUp)
-      
-      // setIsFollowUpModalVisible(false); // Fecha o modal após salvar
+  const handleSaveFollowUp = async (followUp: string, ticketId: number) => {
+    try {
+      if (followUp) {
+        await addFollowUpService(ticketId, followUp, session?.access_token as string);
+        // Aqui você pode adicionar lógica adicional após salvar o follow-up
+        // console.log("Follow-up salvo com sucesso!");
+      }
+    } catch (error) {
+      console.error("Erro ao salvar follow-up:", error);
+      // Aqui você pode tratar o erro de forma adequada, como exibir um Alert
+      Alert.alert("Erro", "Não foi possível salvar o follow-up.");
     }
   };
 

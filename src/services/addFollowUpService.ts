@@ -1,32 +1,27 @@
-import { useSession } from "@/context/ctx";
 import api from "./api";
 import { Alert } from "react-native";
 
-const { signOut, session } = useSession();
+// Método que grava o followup no banco de dados
+const addFollowUpService = async (ticketId: number, followUp: string, token: string) => {
+    try {
+        const response = await api.post(`/followup/`, {
+            id_complaint: ticketId,
+            details: followUp.toUpperCase()
+        }, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
 
-const addFollowUpService = async (ticketId: number, followUp: string) => {
+        Alert.alert("Salvar", "Acompanhamento inserido com sucesso.");
+        // return response.data; // Retornar os dados se necessário
 
-    console.log(`Ticket ID: ${ticketId}, FollowUp: ${followUp.toUpperCase()}`);
-
-    // try {
-    //     const response = await api.post(`/followup/`, {
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             "Authorization": `Bearer ${session?.access_token}`,
-    //         },
-    //         data: {
-    //             id_complaint: ticketId,
-    //             details: followUp.toUpperCase()
-    //         }
-    //     });
-
-    //     console.log(response)
-
-    // } catch (error) {
-    //     console.error("Erro ao buscar arquivos:", error);
-    // } finally {
-    //     Alert.alert("Salvar", "Acompanhamento inserido com sucesso.")
-    // }
+    } catch (error) {
+        console.error("Erro ao inserir acompanhamento:", error);
+        Alert.alert("Erro", "Não foi possível inserir o acompanhamento.");
+        throw error; // Rejeitar explicitamente a promessa em caso de erro
+    }
 }
 
 export default addFollowUpService
