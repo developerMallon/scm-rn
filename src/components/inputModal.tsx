@@ -29,6 +29,7 @@ const InputModal: React.FC<InputModalProps> = ({ isVisible, onClose, onSave, tit
           placeholder={placeholder}
           value={input}
           onChangeText={setInput}
+          multiline={true}
         />
         <Button title="Salvar" onPress={handleSave} />
       </View>
