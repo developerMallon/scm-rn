@@ -1,6 +1,6 @@
 // InputModal.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import Modal from 'react-native-modal';
 
 interface InputModalProps {
@@ -31,7 +31,10 @@ const InputModal: React.FC<InputModalProps> = ({ isVisible, onClose, onSave, tit
           onChangeText={setInput}
           multiline={true}
         />
-        <Button title="Salvar" onPress={handleSave} />
+        <View style={styles.row}>
+          <Button title="Cancelar" onPress={onClose} />
+          <Button title="Salvar" onPress={handleSave} />
+        </View>
       </View>
     </Modal>
   );
@@ -55,6 +58,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 5,
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
+  }
 });
 
 export default InputModal;

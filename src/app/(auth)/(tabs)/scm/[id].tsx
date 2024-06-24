@@ -3,6 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/context/ctx';
 import api from '@/services/api';
+import formatDate from '@/services/formatDate'
 import TruncatedText from '@/components/TruncatedText';
 import FieldShowText from '@/components/FieldShowText';
 import ExpandableView from '@/components/ExpandableView';
@@ -10,81 +11,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { encode } from 'base-64';
 import * as FileSystem from 'expo-file-system';
 import InputModal from '@/components/inputModal';
-
-type FollowUp = {
-  id: number
-  user: Client
-  created_at: string
-  details: string
-}
-
-type Status = {
-  id: number
-  name: string
-}
-
-type ResponsibleGroup = {
-  id: number
-  name: string
-}
-
-type TechnicalReport = {
-  id: number
-  user: Client
-  created_at: string
-  details: string
-}
-
-type Vehicle = {
-  id: string
-  brand: string
-  model: string
-  vin: string
-  plate: string
-  color: string
-  year_model: string
-  km_hr: string
-}
-
-type Client = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  cpf_cnpj: string;
-  phone: string;
-  email: string;
-}
-
-type Type = {
-  id: number,
-  name: string;
-}
-
-type Ticket = {
-  id: number;
-  created_at: string;
-  status: Status;
-  requester: { first_name: string; last_name: string; };
-  responsible_group: ResponsibleGroup;
-  client: Client;
-  type: Type;
-  km_hr: string;
-  complaint: string;
-  vehicles: Vehicle[];
-  technical_reports: TechnicalReport[];
-  follow_ups: FollowUp[];
-};
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
+import updateFollowUP from '@/services/updateFollowUP';
 
 export default function User() {
   const { signOut, session } = useSession();
@@ -214,20 +141,29 @@ export default function User() {
   };
 
 
-  const handleAddComment = () => {
+  // Estados para manipulação dos popups de adição de Parecer Ténico e Followups
+  const handleAddReport = () => {
     setIsCommentModalVisible(true);
   };
   const handleAddFollowUp = () => {
     setIsFollowUpModalVisible(true);
   };
 
-  const handleSaveComment = (comment: string) => {
-    // setComments(prevComments => [...prevComments, comment]);
-    alert(comment)
+  // Método para inserir um novo PARECER TÉCNICO no banco de dados
+  const handleSaveReport = (report: string) => {
+    if (report) {
+      alert(report)
+      return
+    }
   };
+
+  // Método para inserir um novo ACOMPANHAMENTO (FOLLOWUP) no banco de dados
   const handleSaveFollowUp = (followUp: string) => {
-    // setFollowUps(prevFollowUps => [...prevFollowUps, followUp]);
-    alert(followUp)
+    if (followUp) {
+      // updateFollowUP(followUp)
+      alert(followUp)
+      return
+    }
   };
 
 
@@ -271,7 +207,7 @@ export default function User() {
               <TruncatedText title="Reclamação:" text={ticket.complaint} />
             </View>
 
-            {ticket.technical_reports[0] && (
+            {/* {ticket.technical_reports[0] && ( */}
               <ExpandableView title="Parecer Técnico">
                 {ticket.technical_reports[0] && (
                   <View style={styles.row}>
@@ -280,20 +216,20 @@ export default function User() {
                       text={ticket.technical_reports[0].details} />
                   </View>
                 )}
-                <Pressable style={styles.addButton} onPress={handleAddComment}>
+                <Pressable style={styles.addButton} onPress={handleAddReport}>
                   <Text style={styles.addButtonText}>Adicionar</Text>
                 </Pressable>
                 <InputModal
                   isVisible={isCommentModalVisible}
                   onClose={() => setIsCommentModalVisible(false)}
-                  onSave={handleSaveComment}
+                  onSave={handleSaveReport}
                   title="Adicionar Parecer Técnico"
                   placeholder="Descreva o parecer técnico sobre o problema."
                 />
               </ExpandableView>
-            )}
+            {/* )} */}
 
-            {ticket.follow_ups[0] && (
+            {/* {ticket.follow_ups[0] && ( */}
               <ExpandableView title="Acompanhamentos SCM">
                 {ticket?.follow_ups.map((followUp, index) => (
                   <View key={index} style={styles.row}>
@@ -314,9 +250,9 @@ export default function User() {
                   placeholder="Descreva o acompanhamento."
                 />
               </ExpandableView>
-            )}
+            {/* )} */}
 
-            {ticketFiles.length > 0 && (
+            {/* {ticketFiles.length > 0 && ( */}
               <ExpandableView title="Arquivos">
                 {ticketFiles.map((name, index) => (
                   <Pressable key={index} onPress={() => handleFilePress(ticket.id, name, index)}>
@@ -328,18 +264,18 @@ export default function User() {
                     </View>
                   </Pressable>
                 ))}
-                <Pressable style={styles.addButton} onPress={handleAddComment}>
+                <Pressable style={styles.addButton} onPress={handleAddReport}>
                   <Text style={styles.addButtonText}>Adicionar</Text>
                 </Pressable>
                 <InputModal
                   isVisible={isCommentModalVisible}
                   onClose={() => setIsCommentModalVisible(false)}
-                  onSave={handleSaveComment}
+                  onSave={handleSaveReport}
                   title="Adicionar Arquivos"
                   placeholder="Selecione o arquivo e clique em enviar."
                 />
               </ExpandableView>
-            )}
+            {/* )} */}
 
           </View>
         </ScrollView>
