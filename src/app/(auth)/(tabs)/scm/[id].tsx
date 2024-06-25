@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, Platform, Alert } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, Alert, RefreshControl } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/context/ctx';
@@ -14,9 +14,10 @@ import InputModal from '@/components/inputModal';
 import addFollowUpService from '@/services/addFollowUpService';
 import getTicketFiles from '@/services/getTicketFiles'
 import getTicketDetails from '@/services/getTicketDetails';
+import addReportService from '@/services/addReportService';
 
 export default function Ticket() {
-  const { signOut, session } = useSession();
+  const { session } = useSession();
   const { id } = useLocalSearchParams()
   const [loading, setLoading] = useState<boolean>(true);
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -24,27 +25,35 @@ export default function Ticket() {
   const [loadingFiles, setLoadingFiles] = useState<boolean[]>([]);
   const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
   const [isFollowUpModalVisible, setIsFollowUpModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
+  const ticketDetails = async () => {
+    setLoading(true);
+    const details = await getTicketDetails(id as string, session?.access_token as string);
+    setTicket(details)
+    setLoading(false);
+  }
+
+  const ticketFilesName = async () => {
+    setLoading(true);
+    const files = await getTicketFiles(id as string, session?.access_token as string);
+    setTicketFiles(files);
+    setLoadingFiles(Array(files.length).fill(false));
+    setLoading(false);
+  }
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await ticketDetails();
+    await ticketFilesName();
+    setRefreshing(false);
+  };
 
   useEffect(() => {
     // Verifica se a sessão é válida. Caso contrário força a rota de login
     if (!session) {
       router.replace("/");
       return;
-    }
-
-    const ticketDetails = async () => {
-      setLoading(true);
-      const details = await getTicketDetails(id as string, session?.access_token as string);
-      setTicket(details)
-    }
-
-    const ticketFilesName = async () => {
-      setLoading(true);
-      const files = await getTicketFiles(id as string, session?.access_token as string);
-      setTicketFiles(files);
-      setLoadingFiles(Array(files.length).fill(false));
-      setLoading(false);
     }
 
     ticketDetails()
@@ -116,19 +125,18 @@ export default function Ticket() {
   };
 
 
-  // Estados para manipulação dos popups de adição de Parecer Ténico e Followups
-  const handleAddReport = () => {
-    setIsCommentModalVisible(true);
-  };
-  const handleAddFollowUp = () => {
-    setIsFollowUpModalVisible(true);
-  };
-
   // Método para inserir um novo PARECER TÉCNICO no banco de dados
-  const handleSaveReport = (report: string) => {
+  const handleSaveReport = async (report: string, ticketId: number) => {
     if (report) {
-      alert(report)
-      return
+      try {
+        await addReportService(ticketId, report, session?.access_token as string);
+        // Atualiza os detalhes do ticket
+        ticketDetails()
+      }catch (error) {
+        console.error("Erro ao salvar parecer técnico:", error);
+        // Aqui você pode tratar o erro de forma adequada, como exibir um Alert
+        Alert.alert("Erro", "Não foi possível salvar o parecer técnico.");
+      }
     }
   };
 
@@ -137,8 +145,8 @@ export default function Ticket() {
     try {
       if (followUp) {
         await addFollowUpService(ticketId, followUp, session?.access_token as string);
-        // Aqui você pode adicionar lógica adicional após salvar o follow-up
-        // console.log("Follow-up salvo com sucesso!");
+        // Atualiza os detalhes do ticket
+        ticketDetails()
       }
     } catch (error) {
       console.error("Erro ao salvar follow-up:", error);
@@ -159,7 +167,10 @@ export default function Ticket() {
       )}
 
       {ticket && (
-        <ScrollView style={styles.scrollView}>
+        <ScrollView style={styles.scrollView}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
           <View style={styles.container}>
             <View style={styles.row}>
               <FieldShowText title="Ticket:" text={ticket.id.toString()} />
@@ -189,20 +200,20 @@ export default function Ticket() {
             </View>
 
             <ExpandableView title="Parecer Técnico" count={ticket.technical_reports.length}>
-              {ticket.technical_reports[0] && (
-                <View style={styles.row}>
-                  <TruncatedText
-                    title={`${formatDate(ticket.technical_reports[0].created_at)} - ${ticket.technical_reports[0].user.first_name} ${ticket.technical_reports[0].user.last_name}`}
-                    text={ticket.technical_reports[0].details} />
-                </View>
-              )}
-              <Pressable style={styles.addButton} onPress={handleAddReport}>
+              {ticket?.technical_reports.map((report, index) => (
+                <View key={index} style={styles.row}>
+                <TruncatedText
+                  title={`${formatDate(report.created_at)} - ${report.user.first_name} ${report.user.last_name}`}
+                  text={report.details} />
+              </View>
+              ))}
+              <Pressable style={styles.addButton} onPress={()=>setIsCommentModalVisible(true)}>
                 <Text style={styles.addButtonText}>Adicionar</Text>
               </Pressable>
               <InputModal
                 isVisible={isCommentModalVisible}
                 onClose={() => setIsCommentModalVisible(false)}
-                onSave={handleSaveReport}
+                onSave={(report: string) => handleSaveReport(report, ticket.id)}
                 title="Adicionar Parecer Técnico"
                 placeholder="Descreva o parecer técnico sobre o problema."
               />
@@ -217,7 +228,7 @@ export default function Ticket() {
                   />
                 </View>
               ))}
-              <Pressable style={styles.addButton} onPress={handleAddFollowUp}>
+              <Pressable style={styles.addButton} onPress={()=>setIsFollowUpModalVisible(true)}>
                 <Text style={styles.addButtonText}>Adicionar</Text>
               </Pressable>
               <InputModal
@@ -240,13 +251,13 @@ export default function Ticket() {
                   </View>
                 </Pressable>
               ))}
-              <Pressable style={styles.addButton} onPress={handleAddReport}>
+              <Pressable style={styles.addButton} onPress={()=>setIsCommentModalVisible(true)}>
                 <Text style={styles.addButtonText}>Adicionar</Text>
               </Pressable>
               <InputModal
                 isVisible={isCommentModalVisible}
                 onClose={() => setIsCommentModalVisible(false)}
-                onSave={handleSaveReport}
+                onSave={(report: string) => handleSaveReport(report, ticket.id)}
                 title="Adicionar Arquivos"
                 placeholder="Selecione o arquivo e clique em enviar."
               />

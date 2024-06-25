@@ -113,8 +113,8 @@ export default function TabLayout() {
             title: "Detalhes Ticket",
             tabBarIcon: ({ color, focused, size }) => (
               focused ?
-              <AntDesign name="playcircleo" color="#1BB6C8" size={35} /> :
-              <AntDesign name="play" color={color} size={size} />
+                <AntDesign name="playcircleo" color="#1BB6C8" size={35} /> :
+                <AntDesign name="play" color={color} size={size} />
             ),
           }}
         />
