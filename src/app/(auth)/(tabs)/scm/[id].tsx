@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, Alert, RefreshControl } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, Alert, RefreshControl, TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useSession } from '@/context/ctx';
@@ -15,7 +15,10 @@ import addFollowUpService from '@/services/addFollowUpService';
 import getTicketFiles from '@/services/getTicketFiles'
 import getTicketDetails from '@/services/getTicketDetails';
 import addReportService from '@/services/addReportService';
-import PopupMenu from '@/components/PopupMenu';
+import Icon from '@expo/vector-icons/MaterialCommunityIcons';
+import OptionsModal from '@/components/OptionsModal';
+import { optionsResponsible, optionsStatus, optionsType } from '@/components/Options';
+
 
 export default function Ticket() {
   const { session } = useSession();
@@ -26,7 +29,12 @@ export default function Ticket() {
   const [loadingFiles, setLoadingFiles] = useState<boolean[]>([]);
   const [isCommentModalVisible, setIsCommentModalVisible] = useState(false);
   const [isFollowUpModalVisible, setIsFollowUpModalVisible] = useState(false);
+  const [isKmHrModalVisible, setIsKmHrModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [modalStatusVisible, setModalStatusVisible] = useState(false)
+  const [modalTypeVisible, setModalTypeVisible] = useState(false)
+  const [modalResponsibleVisible, setModalResponsibleVisible] = useState(false)
+
 
   const ticketDetails = async () => {
     setLoading(true);
@@ -157,6 +165,12 @@ export default function Ticket() {
   };
 
 
+  // Método para inserir um novo ACOMPANHAMENTO (FOLLOWUP) no banco de dados
+  const handleSaveKmHr = async (km_hr: string, ticketId: number) => {
+    console.log(ticketId, km_hr)
+  }
+
+
   return (
     <View style={styles.container}>
       {/* Se estiver fazendo o loadig exibe o spinner */}
@@ -178,18 +192,31 @@ export default function Ticket() {
             <View style={styles.row}>
               <FieldShowText title="Ticket:" text={ticket.id.toString()} />
               <FieldShowText title="Criado em:" text={formatDate(ticket.created_at)} />
-              <Pressable onPress={() => console.log("Alterar status")}>
+              <Pressable style={{ flexDirection: 'row' }} onPress={() => setModalStatusVisible(true)}>
                 <FieldShowText title="Status:" text={ticket.status.name} />
+                <Icon name="chevron-down" size={26} color='#1bb6c8' />
               </Pressable>
-              <PopupMenu />
+              
+              <OptionsModal visible={modalStatusVisible} setVisible={setModalStatusVisible} options={optionsStatus} top={100} right={30}/>
             </View>
 
 
             <View style={styles.row}>
               <FieldShowText title="Solicitante:" text={`${ticket.requester.first_name} ${ticket.requester.last_name}`} />
-              <FieldShowText title="Tipo:" text={ticket.type.name} />
-              <FieldShowText title="Responsável:" text={`${ticket.responsible_group.name}`} />
+              
+              <Pressable style={{ flexDirection: 'row' }} onPress={() => setModalTypeVisible(true)}>
+                <FieldShowText title="Tipo:" text={ticket.type.name} />
+                <Icon name="chevron-down" size={26} color='#1bb6c8' />
+              </Pressable>
+              <OptionsModal visible={modalTypeVisible} setVisible={setModalTypeVisible} options={optionsType} top={160} right={200}/>
+
+              <Pressable style={{ flexDirection: 'row' }} onPress={() => setModalResponsibleVisible(true)}>
+                <FieldShowText title="Responsável:" text={`${ticket.responsible_group.name}`} />
+                <Icon name="chevron-down" size={26} color='#1bb6c8' />  
+              </Pressable>
+              <OptionsModal visible={modalResponsibleVisible} setVisible={setModalResponsibleVisible} options={optionsResponsible} top={160} right={50}/>
             </View>
+
             <View style={styles.row}>
               <FieldShowText title="Cliente:" text={`${ticket.client.first_name} ${ticket.client.last_name}`} />
               <FieldShowText title="Telefone:" text={`${ticket.client.phone}`} />
@@ -197,8 +224,21 @@ export default function Ticket() {
             <View style={styles.row}>
               <FieldShowText title="Veículo:" text={ticket.vehicles[0].model} />
               <FieldShowText title="Ano/Modelo:" text={ticket.vehicles[0].year_model} />
-              <FieldShowText title="KM/Hr:" text={ticket.km_hr} />
+
+              <Pressable style={{ flexDirection: 'row' }} onPress={() => setIsKmHrModalVisible(true)}>
+                <FieldShowText title="KM/Hr:" text={ticket.km_hr} />
+                <Icon name="chevron-down" size={26} color='#1bb6c8' />  
+              </Pressable>
+              <InputModal
+                isVisible={isKmHrModalVisible}
+                onClose={() => setIsKmHrModalVisible(false)}
+                onSave={(report: string) => handleSaveKmHr(report, ticket.id)} 
+                title="Km/Hr - (Informe o novo Km/Hr)"
+                placeholder="Informe o novo KM/HR."
+              />
             </View>
+
+
             <View style={styles.row}>
               <FieldShowText title="Chassi:" text={ticket.vehicles[0].vin} />
               <FieldShowText title="Placa:" text={ticket.vehicles[0].plate} />

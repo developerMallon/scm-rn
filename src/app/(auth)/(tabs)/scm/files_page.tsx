@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from 'reac
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Video, ResizeMode } from 'expo-av';
 import * as Sharing from 'expo-sharing';
+import { AntDesign } from '@expo/vector-icons/';
 
 const FilesPage: React.FC = () => {
   const router = useRouter();
@@ -62,7 +63,8 @@ const FilesPage: React.FC = () => {
     <View style={styles.container}>
       {renderFile()}
       <Pressable style={styles.backButton} onPress={() => router.replace(`/scm/${ticket_id}`)}>
-        <Text style={styles.backButtonText}>Voltar</Text>
+        <AntDesign name='closecircleo' size={26} style={styles.closeButton} />
+        {/* <Text style={styles.backButtonText}>Voltar</Text> */}
       </Pressable>
     </View>
   );
@@ -95,15 +97,19 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    bottom: 30,
+    top: 10,
+    right: 10,
+    backgroundColor: '#fafafa',
     padding: 10,
-    backgroundColor: '#007bff',
     borderRadius: 5,
   },
   backButtonText: {
     color: '#fff',
     textAlign: 'center',
   },
+  closeButton: {
+    color: 'red'
+  }
 });
 
 export default FilesPage;
