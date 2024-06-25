@@ -15,6 +15,7 @@ import addFollowUpService from '@/services/addFollowUpService';
 import getTicketFiles from '@/services/getTicketFiles'
 import getTicketDetails from '@/services/getTicketDetails';
 import addReportService from '@/services/addReportService';
+import PopupMenu from '@/components/PopupMenu';
 
 export default function Ticket() {
   const { session } = useSession();
@@ -180,6 +181,7 @@ export default function Ticket() {
               <Pressable onPress={() => console.log("Alterar status")}>
                 <FieldShowText title="Status:" text={ticket.status.name} />
               </Pressable>
+              <PopupMenu />
             </View>
 
 
