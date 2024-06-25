@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, View, Pressable, TextInput } from "react-native";
-import { Text } from "@/components/Themed";
+import { StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, View, Text } from "react-native";
 import { useSession } from "@/context/ctx";
 import { Link, router } from "expo-router";
 import api from '@/services/api';

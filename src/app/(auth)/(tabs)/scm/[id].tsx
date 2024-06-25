@@ -132,7 +132,7 @@ export default function Ticket() {
         await addReportService(ticketId, report, session?.access_token as string);
         // Atualiza os detalhes do ticket
         ticketDetails()
-      }catch (error) {
+      } catch (error) {
         console.error("Erro ao salvar parecer técnico:", error);
         // Aqui você pode tratar o erro de forma adequada, como exibir um Alert
         Alert.alert("Erro", "Não foi possível salvar o parecer técnico.");
@@ -168,15 +168,21 @@ export default function Ticket() {
 
       {ticket && (
         <ScrollView style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }>
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
           <View style={styles.container}>
+
+
             <View style={styles.row}>
               <FieldShowText title="Ticket:" text={ticket.id.toString()} />
               <FieldShowText title="Criado em:" text={formatDate(ticket.created_at)} />
-              <FieldShowText title="Status:" text={ticket.status.name} />
+              <Pressable onPress={() => console.log("Alterar status")}>
+                <FieldShowText title="Status:" text={ticket.status.name} />
+              </Pressable>
             </View>
+
+
             <View style={styles.row}>
               <FieldShowText title="Solicitante:" text={`${ticket.requester.first_name} ${ticket.requester.last_name}`} />
               <FieldShowText title="Tipo:" text={ticket.type.name} />
@@ -202,12 +208,12 @@ export default function Ticket() {
             <ExpandableView title="Parecer Técnico" count={ticket.technical_reports.length}>
               {ticket?.technical_reports.map((report, index) => (
                 <View key={index} style={styles.row}>
-                <TruncatedText
-                  title={`${formatDate(report.created_at)} - ${report.user.first_name} ${report.user.last_name}`}
-                  text={report.details} />
-              </View>
+                  <TruncatedText
+                    title={`${formatDate(report.created_at)} - ${report.user.first_name} ${report.user.last_name}`}
+                    text={report.details} />
+                </View>
               ))}
-              <Pressable style={styles.addButton} onPress={()=>setIsCommentModalVisible(true)}>
+              <Pressable style={styles.addButton} onPress={() => setIsCommentModalVisible(true)}>
                 <Text style={styles.addButtonText}>Adicionar</Text>
               </Pressable>
               <InputModal
@@ -228,7 +234,7 @@ export default function Ticket() {
                   />
                 </View>
               ))}
-              <Pressable style={styles.addButton} onPress={()=>setIsFollowUpModalVisible(true)}>
+              <Pressable style={styles.addButton} onPress={() => setIsFollowUpModalVisible(true)}>
                 <Text style={styles.addButtonText}>Adicionar</Text>
               </Pressable>
               <InputModal
@@ -251,7 +257,7 @@ export default function Ticket() {
                   </View>
                 </Pressable>
               ))}
-              <Pressable style={styles.addButton} onPress={()=>setIsCommentModalVisible(true)}>
+              <Pressable style={styles.addButton} onPress={() => setIsCommentModalVisible(true)}>
                 <Text style={styles.addButtonText}>Adicionar</Text>
               </Pressable>
               <InputModal

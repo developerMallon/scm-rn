@@ -1,12 +1,10 @@
-import { StyleSheet, Image, TouchableOpacity, Pressable } from "react-native";
-import { Text, View } from "@/components/Themed";
-import { useSession } from "../../../context/ctx";
-import { Link, router } from "expo-router";
-import { config } from '../../../../config';
+import { StyleSheet, Image, Text, View } from "react-native";
+import { useSession } from "@/context/ctx";
+import { router } from "expo-router";
 
 export default function Home() {
   // O session vai armazenar as informações do usuário logado
-  const { signOut, session } = useSession();
+  const { session } = useSession();
   // Se não houver session vai direcionar para a tela de login
   if (!session) {
     router.replace("/"); // redireciona para a tela de login

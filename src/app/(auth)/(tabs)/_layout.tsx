@@ -4,14 +4,10 @@ import { StatusBar } from 'expo-status-bar';
 import MaterialIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from "expo-router";
-import { useColorScheme } from "@/components/useColorScheme";
-import { useNavigation } from '@react-navigation/native';
 import { useSession } from "@/context/ctx";
 import { AntDesign } from "@expo/vector-icons";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const navigation = useNavigation();
   const { signOut, session } = useSession();
 
   const handleLogout = () => {
