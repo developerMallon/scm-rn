@@ -44,7 +44,9 @@ const index = () => {
                     <SafeAreaView style={{ flex: 1 }}>
                         <View style={styles.popup}>
                             {options.map((option, index) => (
-                                <TouchableOpacity style={styles.option} key={index} onPress={() => { option.action(); setVisible(false) }}>
+                                <TouchableOpacity style={[styles.option, {
+                                    borderBottomWidth: index === options.length - 1 ? 0 : 1 
+                                }]} key={index} onPress={() => { option.action() }}>
                                     <Text>{option.title}</Text>
                                     <Icon style={styles.icon} name={option.icon} size={26} color='#1bb6c8' />
                                 </TouchableOpacity>
@@ -79,6 +81,6 @@ const styles = StyleSheet.create({
         borderBottomColor: '#ccc'
     },
     icon: {
-        marginLeft: 10
+        marginLeft: 20
     }
 })
