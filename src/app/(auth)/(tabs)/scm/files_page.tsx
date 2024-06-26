@@ -4,8 +4,11 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import * as Sharing from 'expo-sharing';
 import { AntDesign } from '@expo/vector-icons/';
+// import Pdf from 'react-native-pdf'
 
 const { width, height } = Dimensions.get('window');
+
+// const PdfResource = { uri: 'https://www.mallon.com.br/mms/api/public/storage/uploads/1713558538_3341.pdf', cache: true }
 
 const FilesPage: React.FC = () => {
   const router = useRouter();
@@ -53,28 +56,28 @@ const FilesPage: React.FC = () => {
       case 'mp4':
       case 'mov':
         return (
-            <View style={styles.contentContainer}>
-              <VideoView
-                ref={ref}
-                style={styles.video}
-                player={player}
-                contentFit='contain'
-                allowsFullscreen
-                allowsPictureInPicture
-              />
-              <View style={styles.controlsContainer}>
-                <Pressable onPress={() => {
-                  if (isPlaying) {
-                    player.pause();
-                  } else {
-                    player.play();
-                  }
-                  setIsPlaying(!isPlaying);
-                }}>
-                  <Text style={styles.controlsContainerText}>{isPlaying ? 'Pause' : 'Play'}</Text>
-                </Pressable>
-              </View>
+          <View style={styles.contentContainer}>
+            <VideoView
+              ref={ref}
+              style={styles.video}
+              player={player}
+              contentFit='contain'
+              allowsFullscreen
+              allowsPictureInPicture
+            />
+            <View style={styles.controlsContainer}>
+              <Pressable onPress={() => {
+                if (isPlaying) {
+                  player.pause();
+                } else {
+                  player.play();
+                }
+                setIsPlaying(!isPlaying);
+              }}>
+                <Text style={styles.controlsContainerText}>{isPlaying ? 'Pause' : 'Play'}</Text>
+              </Pressable>
             </View>
+          </View>
         );
       case 'pdf':
         return (
@@ -82,7 +85,7 @@ const FilesPage: React.FC = () => {
             style={styles.button}
             onPress={() => Sharing.shareAsync(uri)}
           >
-            <Text style={styles.buttonText}>Open PDF</Text>
+            <Text style={styles.buttonText}>Abrir PDF</Text>
           </TouchableOpacity>
         );
       default:
@@ -174,6 +177,11 @@ const styles = StyleSheet.create({
     color: '#1bb6c8',
     fontSize: 24,
     fontWeight: 'bold'
+  },
+  pdf: {
+    flex: 1,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height
   },
 });
 
