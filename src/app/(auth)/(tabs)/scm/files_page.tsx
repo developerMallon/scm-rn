@@ -1,13 +1,37 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Pressable, ScrollView, Dimensions } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Video, ResizeMode } from 'expo-av';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import * as Sharing from 'expo-sharing';
 import { AntDesign } from '@expo/vector-icons/';
 
+const { width, height } = Dimensions.get('window');
+
 const FilesPage: React.FC = () => {
   const router = useRouter();
-  const { ticket_id, uri, name } = useLocalSearchParams<{ ticket_id: string, uri: string; name: string }>();
+  const { ticket_id, uri, name } = useLocalSearchParams<{ ticket_id: string; uri: string; name: string }>();
+
+  const ref = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [videoUri, setVideoUri] = useState<string | undefined>(uri);
+
+  const player = useVideoPlayer(videoUri || '', player => {
+    player.loop = false;
+    player.play();
+  });
+
+  useEffect(() => {
+    setVideoUri(uri); // Atualiza o videoUri quando uri muda
+  }, [uri]);
+
+  useEffect(() => {
+    const subscription = player.addListener('playingChange', isPlaying => {
+      setIsPlaying(isPlaying);
+    });
+    return () => {
+      subscription.remove();
+    };
+  }, [player]);
 
   if (!uri) {
     return (
@@ -29,14 +53,28 @@ const FilesPage: React.FC = () => {
       case 'mp4':
       case 'mov':
         return (
-          <Video
-            source={{ uri }}
-            style={styles.video}
-            useNativeControls
-            resizeMode={ResizeMode.CONTAIN}
-            isLooping
-            shouldPlay
-          />
+            <View style={styles.contentContainer}>
+              <VideoView
+                ref={ref}
+                style={styles.video}
+                player={player}
+                contentFit='contain'
+                allowsFullscreen
+                allowsPictureInPicture
+              />
+              <View style={styles.controlsContainer}>
+                <Pressable onPress={() => {
+                  if (isPlaying) {
+                    player.pause();
+                  } else {
+                    player.play();
+                  }
+                  setIsPlaying(!isPlaying);
+                }}>
+                  <Text style={styles.controlsContainerText}>{isPlaying ? 'Pause' : 'Play'}</Text>
+                </Pressable>
+              </View>
+            </View>
         );
       case 'pdf':
         return (
@@ -64,7 +102,6 @@ const FilesPage: React.FC = () => {
       {renderFile()}
       <Pressable style={styles.backButton} onPress={() => router.replace(`/scm/${ticket_id}`)}>
         <AntDesign name='closecircleo' size={26} style={styles.closeButton} />
-        {/* <Text style={styles.backButtonText}>Voltar</Text> */}
       </Pressable>
     </View>
   );
@@ -75,13 +112,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 4
+    margin: 4,
   },
   image: {
-    width: '100%',
-    height: '100%',
-  },
-  video: {
     width: '100%',
     height: '100%',
   },
@@ -99,7 +132,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    backgroundColor: '#fafafa',
+    backgroundColor: 'rgba(255,255,255,0.6)',
     padding: 10,
     borderRadius: 5,
   },
@@ -108,8 +141,40 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   closeButton: {
-    color: 'red'
-  }
+    color: '#1bb6c8',
+  },
+  contentContainer: {
+    // backgroundColor: '#999',
+    // flex: 1,
+    // marginBottom: 20,
+    // width: width,
+    // height: height,
+    // flex: 1,
+    // paddingTop: 10,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // paddingHorizontal: 50,
+  },
+  video: {
+    width: width * 0.95,
+    height: '100%',
+  },
+  controlsContainer: {
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    position: 'absolute',
+    borderRadius: 5,
+    alignContent: 'center',
+    bottom: 0,
+    right: 0,
+    margin: 10,
+    padding: 10,
+
+  },
+  controlsContainerText: {
+    color: '#1bb6c8',
+    fontSize: 24,
+    fontWeight: 'bold'
+  },
 });
 
 export default FilesPage;
